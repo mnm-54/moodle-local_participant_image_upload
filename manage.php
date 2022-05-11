@@ -51,4 +51,17 @@ $sql = "SELECT u.id id, (u.username) 'student'
 
 $studentdata = $DB->get_records_sql($sql);
 
-die(var_dump($studentdata));
+$coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
+
+$templatecontext = (object)[
+    'course_name' => $coursename->fullname,
+    'courseid' => $courseid,
+    'studentlist' => array_values($studentdata),
+    'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php')
+];
+
+echo $OUTPUT->header();
+
+echo $OUTPUT->render_from_template('local_participant_image_upload/studentlist', $templatecontext);
+
+echo $OUTPUT->footer();
