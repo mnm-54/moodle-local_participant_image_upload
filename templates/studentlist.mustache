@@ -18,3 +18,33 @@
         
     }
 }}
+
+<h1>{{ course_name }}</h1>
+<hr />
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Student name</th>
+      <th>Action upload image</th>
+    </tr>
+  </thead>
+  <hr />
+  <tbody>
+    {{#studentlist}}
+    <tr>
+      <td>{{ student }}</td>
+      <td>
+        <button
+          type="button"
+          class="btn btn-warning"
+          onclick="location.href=
+          '{{ redirecturl }}?cid={{ courseid }}&id={{ id }}'"
+        >
+          upload
+        </button>
+      </td>
+    </tr>
+  </tbody>
+  {{/studentlist}}
+</table>

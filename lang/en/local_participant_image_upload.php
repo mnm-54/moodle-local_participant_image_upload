@@ -24,4 +24,4 @@
 
 $string['pluginname'] = 'Local plugin for participant image upload';
 $string['title_manage'] = 'Student list';
-$string['title_view'] = 'Student list';
+$string['title_upload'] = 'upload Student image';
