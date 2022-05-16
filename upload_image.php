@@ -35,8 +35,10 @@ if (!is_siteadmin()) {
     redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
 }
 
-//Instantiate imageupload_form 
+// Instantiate imageupload_form 
 $mform = new imageupload_form();
+
+// checking form
 if ($data = $mform->get_data()) {
     // ... store or update $student
     file_save_draft_area_files(
@@ -47,7 +49,20 @@ if ($data = $mform->get_data()) {
         $data->id,
         array('subdirs' => 0, 'maxfiles' => 50)
     );
-    die(var_dump($data));
+
+    if ($DB->record_exists_select('local_piu', 'student_id = :id and course_id= :courseid', array('id' => $data->id, 'courseid' => $data->course))) {
+        $record = $DB->get_record_select('local_piu', 'student_id = :id and course_id= :courseid', array('id' => $data->id, 'courseid' => $data->course));
+        $record->photo_draft_id = $data->student_photo;
+        $DB->update_record('local_piu', $record);
+        redirect($CFG->wwwroot . '/local/participant_image_upload/manage.php?cid=' . $data->course, 'Image updated', null, \core\output\notification::NOTIFY_SUCCESS);
+    } else {
+        $record = new stdClass;
+        $record->student_id = $data->id;
+        $record->course_id = $data->course;
+        $record->photo_draft_id = $data->student_photo;
+        $DB->insert_record('local_piu', $record);
+        redirect($CFG->wwwroot . '/local/participant_image_upload/manage.php?cid=' . $data->course, 'Image updated', null, \core\output\notification::NOTIFY_SUCCESS);
+    }
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
