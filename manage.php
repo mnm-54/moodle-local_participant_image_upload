@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once('lib.php');
 
 $PAGE->set_url(new moodle_url('/local/participant_image_upload/manage.php'));
 $PAGE->set_context(\context_system::instance());
@@ -60,8 +61,61 @@ $templatecontext = (object)[
     'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php')
 ];
 
-echo $OUTPUT->header();
+$redirecturl = $CFG->wwwroot . '/local/participant_image_upload/upload_image.php';
 
-echo $OUTPUT->render_from_template('local_participant_image_upload/studentlist', $templatecontext);
+echo $OUTPUT->header();
+echo "<h1>$coursename->fullname</h1><hr />";
+echo '
+<style>
+#student_image_listcss {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  #student_image_listcss td, #student_image_listcss th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #student_image_listcss tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #student_image_listcss tr:hover {background-color: #ddd;}
+  
+  #student_image_listcss th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+  }
+</style>
+<table border="1" id="student_image_listcss">
+    <thead>
+    <tr>
+        <th>Student name</th>
+        <th>Preview</th>
+        <th>Upload image</th>
+    </tr>
+    </thead><tbody>';
+
+foreach ($studentdata as $student) {
+    $btnurl = ($redirecturl . "?cid=" . $courseid . "&id=" . $student->id);
+    echo "
+    <tr>
+        <td>" . $student->student . "</td>
+        <td>" . get_image_url($courseid, $student->id) . "</td>
+        <td>
+        <button
+            type='button'
+            class='btn btn-warning'
+            onclick=" . "location.href='" . $btnurl . "'>" .
+        "upload
+        </button>
+        </td>
+    </tr>";
+}
+
+echo '</tbody></table>';
 
 echo $OUTPUT->footer();
