@@ -67,3 +67,26 @@ function local_participant_image_upload_pluginfile($course, $cm, $context, $file
     // finally send the file
     send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
 }
+
+
+function get_image_url($courseid, $studentid)
+{
+    $context = context_course::instance($courseid);
+
+    $fs = get_file_storage();
+    if ($files = $fs->get_area_files($context->id, 'local_participant_image_upload', 'student_photo')) {
+
+        foreach ($files as $file) {
+            if ($studentid == $file->get_itemid() && $file->get_filename() != '.') {
+                // Build the File URL. Long process! But extremely accurate.
+                $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
+                // Display the image
+                $download_url = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path();
+
+                // return '<a href="' . $download_url . '">' . $file->get_filename() . '</a><br/>';
+                return '<img src="' . $download_url . '" width="auto" height="100"/><br/>';
+            }
+        }
+    }
+    return '<p>Please upload an image first</p>';
+}
