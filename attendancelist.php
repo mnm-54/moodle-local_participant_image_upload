@@ -42,7 +42,7 @@ if ($courseid == 0) {
 
 global $DB;
 $today = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-$sql = "SELECT u.id id, (u.username) 'student'
+$sql = "SELECT u.id id, (u.username) 'student', fra.time time
         FROM {role_assignments} r
         JOIN {user} u on r.userid = u.id
         JOIN {role} rn on r.roleid = rn.id
@@ -50,59 +50,21 @@ $sql = "SELECT u.id id, (u.username) 'student'
         JOIN {course} c on ctx.instanceid = c.id
         left join moodlebackup.mdl_block_face_recog_attendance fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
         WHERE rn.shortname = 'student'
-        AND c.id=" . $courseid;
+        AND c.id=" . $courseid . " order by u.id";
 
 $studentdata = $DB->get_records_sql($sql);
 
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
+$templatecontext = (object)[
+    'course_name' => $coursename->fullname,
+    'courseid' => $courseid,
+    'studentlist' => array_values($studentdata),
+    'date' => date("Y/m/d")
+];
+
 echo $OUTPUT->header();
-echo "<h1>$coursename->fullname</h1><hr />";
-echo "Date: " . date("Y/m/d") . "<br>";
-echo '
-<style>
-#student_image_listcss {
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  #student_image_listcss td, #student_image_listcss th {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  #student_image_listcss tr:nth-child(even){background-color: #f2f2f2;}
-  
-  #student_image_listcss tr:hover {background-color: #ddd;}
-  
-  #student_image_listcss th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #04AA6D;
-    color: white;
-  }
-</style>
-<table border="1" id="student_image_listcss">
-    <thead>
-    <tr>
-        <th>Student ID</th>
-        <th>Student Name</th>
-        <th>Attandance</th>
-    </tr>
-    </thead><tbody>';
 
-foreach ($studentdata as $student) {
-    $attandance = check_student_attandance($courseid, $student->id, $today);
-    echo "
-    <tr>
-        <td>" . $student->id . "</td>
-        <td>" . $student->student . "</td>"
-        . $attandance .
-        "</tr>";
-}
-
-echo '</tbody></table>';
+echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
 
 echo $OUTPUT->footer();
