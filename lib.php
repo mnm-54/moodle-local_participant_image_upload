@@ -90,3 +90,17 @@ function get_image_url($courseid, $studentid)
     }
     return '<p>Please upload an image first</p>';
 }
+
+/**
+ * check student attandance for the day
+ */
+function check_student_attandance($cid, $sid, $time)
+{
+    global $DB;
+    $done = $DB->count_records("block_face_recog_attendance", array('student_id' => $sid, 'course_id' => $cid, 'time' => $time));
+    if ($done) {
+        return "<td style='color:green;'>Present</td>";
+    } else {
+        return "<td style='color:red;'>Absent</td>";
+    }
+}

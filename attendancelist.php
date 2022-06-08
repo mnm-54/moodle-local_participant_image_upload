@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * manage page of the plugin
+ * List of student with attendance
  *
  * @package    local_participant_image_upload
  * @copyright  2022 munem
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\check\check;
+
 require_once(__DIR__ . '/../../config.php');
 require_once('lib.php');
 
-$PAGE->set_url(new moodle_url('/local/participant_image_upload/manage.php'));
+$PAGE->set_url(new moodle_url('/local/participant_image_upload/attendancelist.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_manage', 'local_participant_image_upload'));
-
-require_login();
 
 if (!is_siteadmin()) {
     redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
@@ -41,12 +41,14 @@ if ($courseid == 0) {
 }
 
 global $DB;
+$today = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 $sql = "SELECT u.id id, (u.username) 'student'
         FROM {role_assignments} r
         JOIN {user} u on r.userid = u.id
         JOIN {role} rn on r.roleid = rn.id
         JOIN {context} ctx on r.contextid = ctx.id
         JOIN {course} c on ctx.instanceid = c.id
+        left join moodlebackup.mdl_block_face_recog_attendance fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
         WHERE rn.shortname = 'student'
         AND c.id=" . $courseid;
 
@@ -54,17 +56,9 @@ $studentdata = $DB->get_records_sql($sql);
 
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
-$templatecontext = (object)[
-    'course_name' => $coursename->fullname,
-    'courseid' => $courseid,
-    'studentlist' => array_values($studentdata),
-    'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php')
-];
-
-$redirecturl = $CFG->wwwroot . '/local/participant_image_upload/upload_image.php';
-
 echo $OUTPUT->header();
 echo "<h1>$coursename->fullname</h1><hr />";
+echo "Date: " . date("Y/m/d") . "<br>";
 echo '
 <style>
 #student_image_listcss {
@@ -93,27 +87,20 @@ echo '
 <table border="1" id="student_image_listcss">
     <thead>
     <tr>
-        <th>Student name</th>
-        <th>Preview</th>
-        <th>Upload image</th>
+        <th>Student ID</th>
+        <th>Student Name</th>
+        <th>Attandance</th>
     </tr>
     </thead><tbody>';
 
 foreach ($studentdata as $student) {
-    $btnurl = ($redirecturl . "?cid=" . $courseid . "&id=" . $student->id);
+    $attandance = check_student_attandance($courseid, $student->id, $today);
     echo "
     <tr>
-        <td>" . $student->student . "</td>
-        <td>" . get_image_url($courseid, $student->id) . "</td>
-        <td>
-        <button
-            type='button'
-            class='btn btn-warning'
-            onclick=" . "location.href='" . $btnurl . "'>" .
-        "upload
-        </button>
-        </td>
-    </tr>";
+        <td>" . $student->id . "</td>
+        <td>" . $student->student . "</td>"
+        . $attandance .
+        "</tr>";
 }
 
 echo '</tbody></table>';

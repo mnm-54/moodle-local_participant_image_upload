@@ -12,7 +12,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_participant_image_upload/studentlist
+    @template local_participant_image_upload/attendancelist
     Example context (json):
     {
         
@@ -25,24 +25,18 @@
 <table border="1">
   <thead>
     <tr>
-      <th>Student name</th>
-      <th>Action upload image</th>
+      <th>Student ID</th>
+      <th>Student Name</th>
+      <th>Attandance</th>
     </tr>
   </thead>
   <hr />
   <tbody>
     {{#studentlist}}
     <tr>
-      <td>{{ student }}</td>
-      <td>
-        <button
-          type="button"
-          class="btn btn-warning"
-          onclick="location.href=
-          '{{ redirecturl }}?cid={{ courseid }}&id={{ id }}'"
-        >
-          upload
-        </button>
+        <td>{{ id }}</td>
+        <td>{{student}}</button>
+        <td>{{time}}</td>
       </td>
     </tr>
   </tbody>
