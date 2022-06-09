@@ -22,8 +22,6 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\check\check;
-
 require_once(__DIR__ . '/../../config.php');
 require_once('lib.php');
 
@@ -36,12 +34,17 @@ if (!is_siteadmin()) {
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
+$month = optional_param('m', date('m'), PARAM_RAW);
+$day = optional_param('d', date('d'), PARAM_RAW);
+$year = optional_param('y', date('y'), PARAM_RAW);
+// die(var_dump($month, $day, $year));
+
 if ($courseid == 0) {
     redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
 }
 
-global $DB;
-$today = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+global $DB, $PAGE;
+$today = mktime(0, 0, 0, $month, $day, $year);
 $sql = "SELECT u.id id, (u.username) 'student', fra.time time
         FROM {role_assignments} r
         JOIN {user} u on r.userid = u.id
@@ -63,8 +66,13 @@ $templatecontext = (object)[
     'date' => date("Y/m/d")
 ];
 
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
+$PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
+    $month, $day, $year,
+    $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
+));
 
 echo $OUTPUT->footer();
