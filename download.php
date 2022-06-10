@@ -25,10 +25,7 @@
 require_once(__DIR__ . '/../../config.php');
 require_once('lib.php');
 
-$PAGE->set_url(new moodle_url('/local/participant_image_upload/attendancelist.php'));
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_title(get_string('title_manage', 'local_participant_image_upload'));
-
+require_login();
 if (!is_siteadmin()) {
     redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
 }
@@ -38,32 +35,33 @@ $month = optional_param('m', date('m'), PARAM_RAW);
 $day = optional_param('d', date('d'), PARAM_RAW);
 $year = optional_param('y', date('y'), PARAM_RAW);
 
+$dataformat = optional_param('dataformat', '', PARAM_ALPHA);
+
 if ($courseid == 0) {
     redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
 }
 
-global $DB, $PAGE;
+$columns = array(
+    'id' => 'Student ID',
+    'student' => 'Student Name',
+    'time' => 'attendance'
+);
 
 $studentdata = student_attandancelist($courseid, $month, $day, $year);
 
-$coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
+foreach ($studentdata as $student) {
+    if ($student->time) {
+        $student->time = 'present';
+    } else {
+        $student->time = 'absent';
+    }
+}
 
-$templatecontext = (object)[
-    'course_name' => $coursename->fullname,
-    'courseid' => $courseid,
-    'studentlist' => array_values($studentdata),
-    'date' => date("Y/m/d")
-];
+$filename = 'student_attendance_' . $month . '-' . $day . '-' . $year;
 
-
-echo $OUTPUT->header();
-
-echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
-$PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
-    $month, $day, $year,
-    $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
-));
-
-echo $OUTPUT->download_dataformat_selector('Download', 'download.php', 'dataformat', array('cid' => $courseid, 'm' => $month, 'd' => $day, 'y' => $year));
-
-echo $OUTPUT->footer();
+\core\dataformat::download_data($filename, $dataformat, $columns, $studentdata, function ($record) {
+    // Process the data in some way.
+    // You can add and remove columns as needed
+    // as long as the resulting data matches the $column metadata.
+    return $record;
+});
