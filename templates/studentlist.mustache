@@ -44,18 +44,22 @@
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #04aa6d;
-    color: white;
+    background-color: #ddd;
+    color: black;
   }
 </style>
 
 <h1>{{ course_name }}</h1>
+<button class="btn-primary" onclick="location.href='{{ attandancelist_url }}'">
+  Check Attendance List
+</button>
 <hr />
 
-<table border="1">
+<table border="1" id="student_image_listcss">
   <thead>
     <tr>
       <th>Student name</th>
+      <th>Preview</th>
       <th>Action upload image</th>
     </tr>
   </thead>
@@ -65,9 +69,17 @@
     <tr>
       <td>{{ student }}</td>
       <td>
+        {{#image_url}}
+        <img src="{{ image_url }}" width="auto" height="100" />
+        {{/image_url}}
+        {{^image_url}}
+        <P style="color: red">Please upload a image first</P>
+        {{/image_url}}
+      </td>
+      <td>
         <button
           type="button"
-          class="btn btn-warning"
+          class="btn btn-primary"
           onclick="location.href=
           '{{ redirecturl }}?cid={{ courseid }}&id={{ id }}'"
         >

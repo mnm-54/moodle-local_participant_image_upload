@@ -39,7 +39,9 @@ if (!is_siteadmin()) {
 $mform = new imageupload_form();
 
 // checking form
-if ($data = $mform->get_data()) {
+if ($mform->is_cancelled()) {
+    redirect($CFG->wwwroot . '', 'Cancelled image upload', null, \core\output\notification::NOTIFY_INFO);
+} else if ($data = $mform->get_data()) {
     // ... store or update $student
     file_save_draft_area_files(
         $data->student_photo,
