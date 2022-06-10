@@ -37,25 +37,14 @@ $courseid = optional_param('cid', 0, PARAM_INT);
 $month = optional_param('m', date('m'), PARAM_RAW);
 $day = optional_param('d', date('d'), PARAM_RAW);
 $year = optional_param('y', date('y'), PARAM_RAW);
-// die(var_dump($month, $day, $year));
 
 if ($courseid == 0) {
     redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
 }
 
 global $DB, $PAGE;
-$today = mktime(0, 0, 0, $month, $day, $year);
-$sql = "SELECT u.id id, (u.username) 'student', fra.time time
-        FROM {role_assignments} r
-        JOIN {user} u on r.userid = u.id
-        JOIN {role} rn on r.roleid = rn.id
-        JOIN {context} ctx on r.contextid = ctx.id
-        JOIN {course} c on ctx.instanceid = c.id
-        left join moodlebackup.mdl_block_face_recog_attendance fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
-        WHERE rn.shortname = 'student'
-        AND c.id=" . $courseid . " order by u.id";
 
-$studentdata = $DB->get_records_sql($sql);
+$studentdata = student_attandancelist($courseid, $month, $day, $year);
 
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
@@ -74,5 +63,6 @@ $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'ini
     $month, $day, $year,
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
 ));
+
 
 echo $OUTPUT->footer();

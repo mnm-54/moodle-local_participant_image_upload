@@ -104,3 +104,25 @@ function check_student_attandance($cid, $sid, $time)
         return "<td style='color:red;'>Absent</td>";
     }
 }
+
+/**
+ * $return student attendance list for the day
+ */
+function student_attandancelist($courseid, $month, $day, $year)
+{
+    global $DB;
+    $today = mktime(0, 0, 0, $month, $day, $year);
+    $sql = "SELECT u.id id, (u.username) 'student', fra.time time
+            FROM {role_assignments} r
+            JOIN {user} u on r.userid = u.id
+            JOIN {role} rn on r.roleid = rn.id
+            JOIN {context} ctx on r.contextid = ctx.id
+            JOIN {course} c on ctx.instanceid = c.id
+            left join moodlebackup.mdl_block_face_recog_attendance fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
+            WHERE rn.shortname = 'student'
+            AND c.id=" . $courseid . " order by u.id";
+
+    $studentdata = $DB->get_records_sql($sql);
+
+    return $studentdata;
+}
