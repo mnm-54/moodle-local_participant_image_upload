@@ -82,13 +82,11 @@ function get_image_url($courseid, $studentid)
                 $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
                 // Display the image
                 $download_url = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path();
-
-                // return '<a href="' . $download_url . '">' . $file->get_filename() . '</a><br/>';
-                return '<img src="' . $download_url . '" width="auto" height="100"/><br/>';
+                return $download_url;
             }
         }
     }
-    return '<p>Please upload an image first</p>';
+    return false;
 }
 
 /**
