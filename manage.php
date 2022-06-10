@@ -65,6 +65,7 @@ $redirecturl = $CFG->wwwroot . '/local/participant_image_upload/upload_image.php
 
 echo $OUTPUT->header();
 echo "<h1>$coursename->fullname</h1><hr />";
+echo "<button onclick=\"location.href = '" . $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php?cid=" . $courseid . "';\">Check attendance list</button>";
 echo '
 <style>
 #student_image_listcss {
