@@ -116,7 +116,7 @@ function student_attandancelist($courseid, $month, $day, $year)
             JOIN {role} rn on r.roleid = rn.id
             JOIN {context} ctx on r.contextid = ctx.id
             JOIN {course} c on ctx.instanceid = c.id
-            left join moodlebackup.mdl_block_face_recog_attendance fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
+            left join {block_face_recog_attendance} fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
             WHERE rn.shortname = 'student'
             AND c.id=" . $courseid . " order by u.id";
 
