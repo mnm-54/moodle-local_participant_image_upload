@@ -21,9 +21,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<link rel="stylesheet" type="text/css" href="./DataTables/datatables.css">
+<link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
  
-<script type="text/javascript" charset="utf8" src="./DataTables/datatables.js"></script>
+<script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
 
 <h1>{{ course_name }}</h1>
 <a class="btn btn-primary mb-5" href="{{ attandancelist_url }}">
@@ -31,7 +31,7 @@
 </a>
 
 
-<table class="table table-hover" border="1" id="student_image_listcss">
+<table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
       <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
@@ -66,7 +66,6 @@
 
 <script>
 $(document).ready( function () {
-    console.log("HEllo");
-    $('#student_image_listcss').DataTable();
+    $('#data_table').DataTable();
 } );
 </script>

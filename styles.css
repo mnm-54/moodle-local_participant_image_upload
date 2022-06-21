@@ -1,15 +1,15 @@
-#student_image_listcss {
+#data_table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse !important;
   width: 100%;
 }
 
-#student_image_listcss td,
-#student_image_listcss th {
+#data_table td,
+#data_table th {
   border: 1px solid #ddd;
   padding: 8px;
 }
-#student_image_listcss th {
+#data_table th {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;

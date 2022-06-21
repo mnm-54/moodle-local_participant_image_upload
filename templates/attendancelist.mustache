@@ -18,6 +18,12 @@
         
     }
 }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
+ 
+<script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
     
 <h1>{{ course_name }}</h1>
 <label for="attendance_date">Date:</label>
@@ -27,7 +33,7 @@
 </button>
 
 
-<table class="table table-hover" border="1" id="student_image_listcss">
+<table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
       <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
@@ -55,3 +61,10 @@
   </tbody>
   
 </table>
+
+<script>
+$(document).ready( function () {
+    $('#data_table').DataTable();
+} );
+</script>
+
