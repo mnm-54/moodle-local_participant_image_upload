@@ -19,13 +19,19 @@
     }
 }}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
+ 
+<script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
+
 <h1>{{ course_name }}</h1>
-<a class="btn btn-primary" href="{{ attandancelist_url }}">
+<a class="btn btn-primary mb-5" href="{{ attandancelist_url }}">
   {{#str}} attendance_list, local_participant_image_upload {{/str}}
 </a>
 
 
-<table class="table table-hover" border="1" id="student_image_listcss">
+<table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
       <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
@@ -34,7 +40,6 @@
       <th class="bg-primary">{{#str}} action, local_participant_image_upload {{/str}}</th>
     </tr>
   </thead>
-  <hr />
   <tbody>
     {{#studentlist}}
     <tr>
@@ -45,7 +50,7 @@
         <img src="{{ image_url }}" width="150" height="auto" />
         {{/image_url}}
         {{^image_url}}
-        <P style="color: red">{{#str}} notifiy_upload_text, local_participant_image_upload {{/str}}</P>
+        <p style="color: red">{{#str}} notifiy_upload_text, local_participant_image_upload {{/str}}</p>
         {{/image_url}}
       </td>
       <td>
@@ -54,6 +59,13 @@
         </a>
       </td>
     </tr>
+    {{/studentlist}}
   </tbody>
-  {{/studentlist}}
+  
 </table>
+
+<script>
+$(document).ready( function () {
+    $('#data_table').DataTable();
+} );
+</script>
