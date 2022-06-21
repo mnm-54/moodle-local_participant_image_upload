@@ -18,60 +18,40 @@
         
     }
 }}
-<style>
-    #student_image_listcss {
-        font-family: Arial, Helvetica, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-      }
-      
-      #student_image_listcss td, #student_image_listcss th {
-        border: 1px solid #ddd;
-        padding: 8px;
-      }
-      
-      #student_image_listcss tr:nth-child(even){background-color: #f2f2f2;}
-      
-      #student_image_listcss tr:hover {background-color: #ddd;}
-      
-      #student_image_listcss th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #ddd;
-        color: black;
-      }
-    </style>
+    
 <h1>{{ course_name }}</h1>
 <label for="attendance_date">Date:</label>
 <input type="date" id="attendance_date" name="attendance_date">
-<button id="date_check">Check</button>
-<hr />
+<button class="btn btn-primary" id="date_check">
+    {{#str}} check, local_participant_image_upload {{/str}}
+</button>
 
-<table border="1" id="student_image_listcss">
+
+<table class="table table-hover" border="1" id="student_image_listcss">
   <thead>
     <tr>
-      <th>Student ID</th>
-      <th>Student Name</th>
-      <th>Attandance</th>
+      <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} email, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} attendance_text, local_participant_image_upload {{/str}}</th>
     </tr>
   </thead>
   <hr />
   <tbody>
     {{#studentlist}}
     <tr>
-        <td>{{ id }}</td>
-        <td>{{student}}</button>
+        <td>{{ firstname }} {{ lastname }}</td>
+        <td>{{ email }} </td>
         <td>
             {{#time}}
-                <b style="color:green;">Present</b>
+                <b style="color:green;">{{#str}} present, local_participant_image_upload {{/str}}</b>
             {{/time}}
             {{^time}}
-                 Absent
+                <b>{{#str}} absent, local_participant_image_upload {{/str}}</b>
             {{/time}}
         </td>
       </td>
     </tr>
+    {{/studentlist}}
   </tbody>
-  {{/studentlist}}
+  
 </table>

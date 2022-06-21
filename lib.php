@@ -110,7 +110,7 @@ function student_attandancelist($courseid, $month, $day, $year)
 {
     global $DB;
     $today = mktime(0, 0, 0, $month, $day, $year);
-    $sql = "SELECT u.id id, (u.username) 'student', fra.time time
+    $sql = "SELECT u.id id, (u.username) 'student', u.firstname, u.lastname, u.email, fra.time time
             FROM {role_assignments} r
             JOIN {user} u on r.userid = u.id
             JOIN {role} rn on r.roleid = rn.id
