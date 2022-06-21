@@ -44,7 +44,10 @@ if ($courseid == 0) {
 $columns = array(
     'id' => 'Student ID',
     'student' => 'Student Name',
-    'time' => 'attendance'
+    'firstname' => 'Firstname',
+    'lastname' => 'Lastname',
+    'email' => 'Email',
+    'time' => 'Attendance'
 );
 
 $studentdata = student_attandancelist($courseid, $month, $day, $year);

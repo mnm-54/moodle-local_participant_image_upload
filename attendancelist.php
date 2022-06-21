@@ -64,6 +64,10 @@ $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'ini
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
 ));
 
-echo $OUTPUT->download_dataformat_selector('Download', 'download.php', 'dataformat', array('cid' => $courseid, 'm' => $month, 'd' => $day, 'y' => $year));
+echo $OUTPUT->download_dataformat_selector(
+    get_string('export', 'local_participant_image_upload'), 
+    'download.php', 
+    'dataformat', array('cid' => $courseid, 'm' => $month, 'd' => $day, 'y' => $year)
+);
 
 echo $OUTPUT->footer();

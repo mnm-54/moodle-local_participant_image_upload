@@ -24,4 +24,16 @@
 
 $string['pluginname'] = 'Local plugin for participant image upload';
 $string['title_manage'] = 'Student list';
-$string['title_upload'] = 'upload Student image';
+$string['title_upload'] = 'Upload Student image';
+$string['upload_text'] = 'Upload';
+$string['notifiy_upload_text'] = "Please upload student's image";
+$string['student_name'] = "Student name";
+$string['email'] = "Email";
+$string['preview'] = "Preview";
+$string['action'] = "Action";
+$string['check'] = "Check";
+$string['attendance_list'] = 'Attendance List';
+$string['attendance_text'] = 'Attendance';
+$string['present'] = 'Present';
+$string['absent'] = 'Absent';
+$string['export'] = 'Export: ';

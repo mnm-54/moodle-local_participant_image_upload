@@ -41,7 +41,7 @@ if ($courseid == 0) {
 }
 
 global $DB;
-$sql = "SELECT u.id id, (u.username) 'student'
+$sql = "SELECT u.id id, (u.username) 'student', u.firstname , u.lastname, u.email
         FROM {role_assignments} r
         JOIN {user} u on r.userid = u.id
         JOIN {role} rn on r.roleid = rn.id
@@ -54,7 +54,6 @@ $studentdata = $DB->get_records_sql($sql);
 
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
-$redirecturl = $CFG->wwwroot . '/local/participant_image_upload/upload_image.php';
 
 echo $OUTPUT->header();
 

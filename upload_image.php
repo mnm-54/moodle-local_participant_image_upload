@@ -35,6 +35,10 @@ if (!is_siteadmin()) {
     redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
 }
 
+$courseid = optional_param('cid', 0, PARAM_INT);
+$studentid = optional_param('id', -1, PARAM_INT);
+
+
 // Instantiate imageupload_form 
 $mform = new imageupload_form();
 
@@ -66,9 +70,6 @@ if ($mform->is_cancelled()) {
         redirect($CFG->wwwroot . '/local/participant_image_upload/manage.php?cid=' . $data->course, 'Image updated', null, \core\output\notification::NOTIFY_SUCCESS);
     }
 }
-
-$courseid = optional_param('cid', 0, PARAM_INT);
-$studentid = optional_param('id', -1, PARAM_INT);
 
 // get context
 if ($courseid) {
