@@ -24,6 +24,7 @@
 
 $string['pluginname'] = 'Local plugin for participant image upload';
 $string['title_manage'] = 'Student list';
+$string['title_courselist'] = 'Available Courses';
 $string['title_upload'] = 'Upload Student image';
 $string['upload_text'] = 'Upload';
 $string['notifiy_upload_text'] = "Please upload student's image";
@@ -37,3 +38,5 @@ $string['attendance_text'] = 'Attendance';
 $string['present'] = 'Present';
 $string['absent'] = 'Absent';
 $string['export'] = 'Export: ';
+$string['course_name'] = "Course name";
+$string['access'] = "Access";
