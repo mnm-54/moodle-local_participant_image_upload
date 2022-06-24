@@ -15,28 +15,15 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Language file
+ * plugin settings
  *
  * @package    local_participant_image_upload
  * @copyright  2022 munem
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Local plugin for participant image upload';
-$string['title_manage'] = 'Student list';
-$string['title_courselist'] = 'Available Courses';
-$string['title_upload'] = 'Upload Student image';
-$string['upload_text'] = 'Upload';
-$string['notifiy_upload_text'] = "Please upload student's image";
-$string['student_name'] = "Student name";
-$string['email'] = "Email";
-$string['preview'] = "Preview";
-$string['action'] = "Action";
-$string['check'] = "Check";
-$string['attendance_list'] = 'Attendance List';
-$string['attendance_text'] = 'Attendance';
-$string['present'] = 'Present';
-$string['absent'] = 'Absent';
-$string['export'] = 'Export: ';
-$string['course_name'] = "Course name";
-$string['access'] = "Access";
+defined('MOODLE_INTERNAL') || die;
+
+if ($hassiteconfig) {
+    $ADMIN->add('localplugins', new admin_externalpage('local_participant_image_upload', get_string('pluginname', 'local_participant_image_upload'), $CFG->wwwroot . '/local/participant_image_upload/courselist.php'));
+}
