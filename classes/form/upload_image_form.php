@@ -51,10 +51,7 @@ class imageupload_form extends moodleform
                 'subdirs' => 0, 'maxfiles' => 1,
                 'accepted_types' => array('png', 'jpg', 'jpeg')
             )
-        ); // Add elements to your form.
-        $mform->addRule('student_photo', 'You must provide a image of seleted student', 'required');
-        // $mform->setType('email', PARAM_NOTAGS);                   // Set type of element.
-        // $mform->setDefault('email', 'Please enter email');        // Default value.
+        );
 
         $this->add_action_buttons();
     }
