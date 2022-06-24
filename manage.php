@@ -58,7 +58,7 @@ $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $course
 echo $OUTPUT->header();
 
 foreach ($studentdata as $student) {
-    $student->image_url = get_image_url($courseid, $student->id);
+    $student->image_url = local_participant_image_upload_get_image_url($student->id);
 }
 $templatecontext = (object)[
     'course_name' => $coursename->fullname,

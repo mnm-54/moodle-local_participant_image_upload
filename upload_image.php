@@ -56,9 +56,10 @@ if ($mform->is_cancelled()) {
         array('subdirs' => 0, 'maxfiles' => 50)
     );
 
-    if ($DB->record_exists_select('local_piu', 'student_id = :id and course_id= :courseid', array('id' => $data->id, 'courseid' => $data->course))) {
-        $record = $DB->get_record_select('local_piu', 'student_id = :id and course_id= :courseid', array('id' => $data->id, 'courseid' => $data->course));
+    if ($DB->record_exists_select('local_piu', 'student_id = :id', array('id' => $data->id))) {
+        $record = $DB->get_record_select('local_piu', 'student_id = :id', array('id' => $data->id));
         $record->photo_draft_id = $data->student_photo;
+        $record->course_id = $data->course;
         $DB->update_record('local_piu', $record);
         redirect($CFG->wwwroot . '/local/participant_image_upload/manage.php?cid=' . $data->course, 'Image updated', null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
@@ -71,11 +72,12 @@ if ($mform->is_cancelled()) {
     }
 }
 
-// get context
-if ($courseid) {
-    $context = context_course::instance($courseid);
-}
+// // get context
+// if ($courseid) {
+//     $context = context_course::instance($courseid);
+// }
 
+$context = context_system::instance();
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 $studentname = $DB->get_record_select('user', 'id=:id', array('id' => $studentid), 'firstname ,lastname');
 
