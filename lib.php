@@ -38,7 +38,7 @@ function local_participant_image_upload_pluginfile($course, $cm, $context, $file
 {
     global $DB;
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
 
@@ -69,9 +69,9 @@ function local_participant_image_upload_pluginfile($course, $cm, $context, $file
 }
 
 
-function get_image_url($courseid, $studentid)
+function local_participant_image_upload_get_image_url($studentid)
 {
-    $context = context_course::instance($courseid);
+    $context = context_system::instance();
 
     $fs = get_file_storage();
     if ($files = $fs->get_area_files($context->id, 'local_participant_image_upload', 'student_photo')) {
