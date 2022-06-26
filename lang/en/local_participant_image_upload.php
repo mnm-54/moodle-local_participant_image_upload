@@ -40,3 +40,6 @@ $string['absent'] = 'Absent';
 $string['export'] = 'Export: ';
 $string['course_name'] = "Course name";
 $string['access'] = "Access";
+$string['attendancewindow'] = 'Attendance Window';
+$string['start'] = 'Start';
+$string['stop'] = 'Stop';
