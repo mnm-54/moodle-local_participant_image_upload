@@ -38,15 +38,30 @@
 <table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
+    <th class="bg-primary">{{#str}} time, local_participant_image_upload {{/str}}</th>
+      
+      <th class="bg-primary">{{#str}} session_id, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} session_name, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} email, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} attendance_text, local_participant_image_upload {{/str}}</th>
+      
     </tr>
   </thead>
   <hr />
   <tbody>
     {{#studentlist}}
     <tr>
+        <td> 
+          {{#time}}
+                {{timedate}}
+            {{/time}}
+            {{^time}}
+                N/A
+            {{/time}}
+        </td>
+        <td> {{ session_id }} </td>
+        <td> {{ session_name }} </td>
         <td>{{ firstname }} {{ lastname }}</td>
         <td>{{ email }} </td>
         <td>

@@ -106,23 +106,19 @@ function check_student_attandance($cid, $sid, $time)
 /**
  * $return student attendance list for the day
  */
-function student_attandancelist($courseid, $month, $day, $year)
+function student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year)
 {
     global $DB;
-    $today = mktime(0, 0, 0, $month, $day, $year);
-    $sql = "SELECT u.id id, (u.username) 'student', u.firstname, u.lastname, u.email, fra.time time
-            FROM {role_assignments} r
-            JOIN {user} u on r.userid = u.id
-            JOIN {role} rn on r.roleid = rn.id
-            JOIN {context} ctx on r.contextid = ctx.id
-            JOIN {course} c on ctx.instanceid = c.id
-            left join {block_face_recog_attendance} fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
-            WHERE rn.shortname = 'student'
-            AND c.id=" . $courseid . " order by u.id";
+    $from = mktime(0, 0, 0, $from_month, $from_day, $from_year);
+    $to = mktime(0, 0, 0,  $to_month, $to_day, $to_year);
+
+    $sql = "SELECT fra.id as id, u.id AS uid, u.username AS student, u.firstname, u.lastname, u.email, fra.session_id, fra.time, lpi.session_name
+            FROM {block_face_recog_attendance} fra 
+            JOIN {user} u on fra.student_id = u.id  
+            JOIN {local_piu_window} lpi on fra.session_id = lpi.session_id
+            WHERE fra.course_id =" . $courseid . " order by lpi.session_id";
 
     $studentdata = $DB->get_records_sql($sql);
-
-
     return $studentdata;
 }
 
