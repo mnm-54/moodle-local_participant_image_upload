@@ -126,11 +126,34 @@ function student_attandancelist($courseid, $month, $day, $year)
     return $studentdata;
 }
 
+function insert_attendance($courseid, $session_id)
+{
+    global $DB;
+    $sql = "SELECT u.id student_id,c.id course_id
+        FROM {role_assignments} r
+        JOIN {user} u on r.userid = u.id
+        JOIN {role} rn on r.roleid = rn.id
+        JOIN {context} ctx on r.contextid = ctx.id
+        JOIN {course} c on ctx.instanceid = c.id
+        WHERE rn.shortname = 'student'
+        AND c.id=" . $courseid;
+
+    $studentdata = $DB->get_records_sql($sql);
+
+    foreach ($studentdata as $student) {
+        $student->session_id = $session_id;
+        $student->time = 0;
+    }
+
+    // die(var_dump($studentdata));
+
+    $DB->insert_records('block_face_recog_attendance', $studentdata);
+}
 
 function toggle_window($courseid, $changedby, $sessionid, $active)
 {
     global $DB;
-    if($active) {
+    if ($active) {
         $record = new stdClass();
         $record->course_id = $courseid;
         $record->active = $active;
@@ -138,13 +161,15 @@ function toggle_window($courseid, $changedby, $sessionid, $active)
         $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
         $record->changedby = $changedby;
 
-        var_dump($record);
+        // var_dump($record);
 
         $DB->insert_record('local_piu_window', $record);
+
+        return $record->session_id;
     } else {
         $record = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'session_id' => $sessionid));
         var_dump($record);
-       
+
         $record->active = $active;
         $record->changedby = $changedby;
 
