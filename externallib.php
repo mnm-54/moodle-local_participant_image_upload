@@ -32,28 +32,53 @@ class local_participant_image_upload_api extends external_api
             array(
                 'courseid' => new external_value(PARAM_INT, "Course id"),
                 'changedby' => new external_value(PARAM_INT, "User id"),
+                'sessionid' => new external_value(PARAM_INT, 'Session id'),
                 'active' => new external_value(PARAM_INT, 'new value')
             )
         );
     }
 
-    public static function active_window($courseid, $changedby, $active)
+    public static function active_window($courseid, $changedby, $sessionid, $active)
     {
         global $DB;
-        if ($DB->record_exists_select('local_piu_window', 'course_id = :id', array('id' => $courseid))) {
-            $record = $DB->get_record_select('local_piu_window', 'course_id = :id', array('id' => $courseid));
-            $record->active = $active;
-            $record->changedby = $changedby;
-
-            $DB->update_record('local_piu_window', $record);
-        } else {
+        if($active) {
             $record = new stdClass();
             $record->course_id = $courseid;
             $record->active = $active;
+            $record->session_id = time();
+            $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
             $record->changedby = $changedby;
 
+            var_dump($record);
+
             $DB->insert_record('local_piu_window', $record);
+        } else {
+            $record = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'session_id' => $sessionid));
+            var_dump($record);
+           
+            $record->active = $active;
+            $record->changedby = $changedby;
+
+            var_dump($record);
+
+            $DB->update_record('local_piu_window', $record);
         }
+        // if ($DB->record_exists_select('local_piu_window', 'course_id = :id and active = :active', array('id' => $courseid, 'active' => 1))) {
+        //     $record = $DB->get_record_select('local_piu_window', 'course_id = :id', array('id' => $courseid));
+        //     $record->active = $active;
+        //     $record->changedby = $changedby;
+
+        //     $DB->update_record('local_piu_window', $record);
+        // } else {
+        //     $record = new stdClass();
+        //     $record->course_id = $courseid;
+        //     $record->active = $active;
+        //     $record->session_id = time();
+        //     $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+        //     $record->changedby = $changedby;
+
+        //     $DB->insert_record('local_piu_window', $record);
+        // }
 
         return ['status' => $active];
     }

@@ -122,5 +122,6 @@ function student_attandancelist($courseid, $month, $day, $year)
 
     $studentdata = $DB->get_records_sql($sql);
 
+
     return $studentdata;
 }

@@ -35,11 +35,26 @@ if (!is_siteadmin()) {
 
 global $DB, $PAGE, $USER;
 
-$sql = "SELECT c.id id,c.fullname fullname, lpw.active active FROM {course} c 
-        left join {local_piu_window} lpw on c.id =lpw.course_id 
+$sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_id FROM {course} c 
+        left join {local_piu_window} lpw on c.id =lpw.course_id  and lpw.active=1
         where visible=1;";
 
 $courses = $DB->get_records_sql($sql);
+// $results = [];
+// foreach ($courses as $key => $course) { 
+//     $temp = [];
+
+//     $temp['course_id'] = $course->id;
+//     $temp['fullname'] = $course->fullname;
+//     $temp['session_id'] = $course->session_id;
+//     $temp['active'] = $course->active;
+
+//     array_push($results, $temp);
+// }
+// var_dump($results);
+// echo "<pre>";
+// var_dump($courses);
+// die;
 array_shift($courses);
 
 // die(var_dump($courses));
