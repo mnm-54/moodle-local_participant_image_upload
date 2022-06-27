@@ -66,12 +66,20 @@
       </td>
       <td>
         {{#active}}
-          <a class="btn btn-warning stop-btn" id="{{ id }}-{{ session_id }}">
+          <a 
+            class="btn btn-warning stop-btn" 
+            id="{{ id }}-{{ session_id }}" 
+            href="{{ actionurl }}?cid={{ id }}&session={{ session_id }}&active=0" 
+          >
             {{#str}} stop, local_participant_image_upload {{/str}}
           </a>
         {{/active}}
         {{^active}}
-        <a class="btn btn-primary start-btn" id="{{ id }}">
+        <a 
+          class="btn btn-primary start-btn" 
+          id="{{ id }}"
+          href="{{ actionurl }}?cid={{ id }}&session={{ session_id }}&active=1"  
+        >
           {{#str}} start, local_participant_image_upload {{/str}}
         </a>
         {{/active}}

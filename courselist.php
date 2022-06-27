@@ -40,34 +40,21 @@ $sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_i
         where visible=1;";
 
 $courses = $DB->get_records_sql($sql);
-// $results = [];
-// foreach ($courses as $key => $course) { 
-//     $temp = [];
 
-//     $temp['course_id'] = $course->id;
-//     $temp['fullname'] = $course->fullname;
-//     $temp['session_id'] = $course->session_id;
-//     $temp['active'] = $course->active;
-
-//     array_push($results, $temp);
-// }
-// var_dump($results);
-// echo "<pre>";
-// var_dump($courses);
-// die;
 array_shift($courses);
 
 // die(var_dump($courses));
 
 $templatecontext = (object)[
     'course_list' => $courses,
-    'redirecturl' => new moodle_url('/local/participant_image_upload/manage.php')
+    'redirecturl' => new moodle_url('/local/participant_image_upload/manage.php'),
+    'actionurl' => $CFG->wwwroot . '/local/participant_image_upload/togglesession.php',
 ];
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/courselist', $templatecontext);
 
-$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
+//$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
 
 echo $OUTPUT->footer();
