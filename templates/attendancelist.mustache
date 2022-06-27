@@ -26,8 +26,10 @@
 <script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
     
 <h1>{{ course_name }}</h1>
-<label for="attendance_date">Date:</label>
-<input type="date" id="attendance_date" name="attendance_date">
+<label for="from_date">From:</label>
+<input type="date" id="from_date" name="from_date">
+<label for="to_date">To:</label>
+<input type="date" id="to_date" name="to_date">
 <button class="btn btn-primary" id="date_check">
     {{#str}} check, local_participant_image_upload {{/str}}
 </button>
