@@ -43,3 +43,5 @@ $string['access'] = "Access";
 $string['attendancewindow'] = 'Attendance Window';
 $string['start'] = 'Start';
 $string['stop'] = 'Stop';
+$string['start_text'] = 'Session started!';
+$string['stop_text'] = 'Session stopped!';

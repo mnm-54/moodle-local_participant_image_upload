@@ -35,24 +35,26 @@ if (!is_siteadmin()) {
 
 global $DB, $PAGE, $USER;
 
-$sql = "SELECT c.id id,c.fullname fullname, lpw.active active FROM {course} c 
-        left join {local_piu_window} lpw on c.id =lpw.course_id 
+$sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_id FROM {course} c 
+        left join {local_piu_window} lpw on c.id =lpw.course_id  and lpw.active=1
         where visible=1;";
 
 $courses = $DB->get_records_sql($sql);
+
 array_shift($courses);
 
 // die(var_dump($courses));
 
 $templatecontext = (object)[
     'course_list' => $courses,
-    'redirecturl' => new moodle_url('/local/participant_image_upload/manage.php')
+    'redirecturl' => new moodle_url('/local/participant_image_upload/manage.php'),
+    'actionurl' => $CFG->wwwroot . '/local/participant_image_upload/togglesession.php',
 ];
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/courselist', $templatecontext);
 
-$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
+//$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
 
 echo $OUTPUT->footer();

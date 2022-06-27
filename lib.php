@@ -122,5 +122,50 @@ function student_attandancelist($courseid, $month, $day, $year)
 
     $studentdata = $DB->get_records_sql($sql);
 
+
     return $studentdata;
+}
+
+
+function toggle_window($courseid, $changedby, $sessionid, $active)
+{
+    global $DB;
+    if($active) {
+        $record = new stdClass();
+        $record->course_id = $courseid;
+        $record->active = $active;
+        $record->session_id = time();
+        $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+        $record->changedby = $changedby;
+
+        var_dump($record);
+
+        $DB->insert_record('local_piu_window', $record);
+    } else {
+        $record = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'session_id' => $sessionid));
+        var_dump($record);
+       
+        $record->active = $active;
+        $record->changedby = $changedby;
+
+        var_dump($record);
+
+        $DB->update_record('local_piu_window', $record);
+    }
+    // if ($DB->record_exists_select('local_piu_window', 'course_id = :id and active = :active', array('id' => $courseid, 'active' => 1))) {
+    //     $record = $DB->get_record_select('local_piu_window', 'course_id = :id', array('id' => $courseid));
+    //     $record->active = $active;
+    //     $record->changedby = $changedby;
+
+    //     $DB->update_record('local_piu_window', $record);
+    // } else {
+    //     $record = new stdClass();
+    //     $record->course_id = $courseid;
+    //     $record->active = $active;
+    //     $record->session_id = time();
+    //     $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+    //     $record->changedby = $changedby;
+
+    //     $DB->insert_record('local_piu_window', $record);
+    // }
 }
