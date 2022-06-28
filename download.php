@@ -31,9 +31,13 @@ if (!is_siteadmin()) {
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
-$month = optional_param('m', date('m'), PARAM_RAW);
-$day = optional_param('d', date('d'), PARAM_RAW);
-$year = optional_param('y', date('y'), PARAM_RAW);
+$from_month = optional_param('fm', date('m'), PARAM_RAW);
+$from_day = optional_param('fd', date('d'), PARAM_RAW);
+$from_year = optional_param('fy', date('y'), PARAM_RAW);
+
+$to_month = optional_param('tm', date('m'), PARAM_RAW);
+$to_day = optional_param('td', date('d'), PARAM_RAW);
+$to_year = optional_param('ty', date('y'), PARAM_RAW);
 
 $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
@@ -42,15 +46,18 @@ if ($courseid == 0) {
 }
 
 $columns = array(
-    'id' => 'Student ID',
+    'id' => 'Attendance ID',
+    'uid' => 'Student ID',
     'student' => 'Student Name',
     'firstname' => 'Firstname',
     'lastname' => 'Lastname',
     'email' => 'Email',
-    'time' => 'Attendance'
+    'session_id' => 'Session ID',
+    'time' => 'Attendance',
+    'session_name' => 'Session Name',
 );
 
-$studentdata = student_attandancelist($courseid, $month, $day, $year);
+$studentdata = student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year);
 
 foreach ($studentdata as $student) {
     if ($student->time) {
@@ -60,7 +67,8 @@ foreach ($studentdata as $student) {
     }
 }
 
-$filename = 'student_attendance_' . $month . '-' . $day . '-' . $year;
+//$filename = 'student_attendance_' . $month . '-' . $day . '-' . $year;
+$filename = 'student_attendance_' . $courseid;
 
 \core\dataformat::download_data($filename, $dataformat, $columns, $studentdata, function ($record) {
     // Process the data in some way.

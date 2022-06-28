@@ -50,10 +50,6 @@ global $DB, $PAGE;
 
 $studentdata = student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year);
 
-// echo "<pre>";
-// var_dump($studentdata);
-// die;
-
 $students = [];
 foreach($studentdata as $student) {
     $student->timedate = date('m-d-Y H:i:s', $student->time);
