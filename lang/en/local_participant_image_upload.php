@@ -45,3 +45,6 @@ $string['start'] = 'Start';
 $string['stop'] = 'Stop';
 $string['start_text'] = 'Session started!';
 $string['stop_text'] = 'Session stopped!';
+$string['session_name'] = 'Session name';
+$string['session_id'] = 'Session id';
+$string['time'] = 'Time';

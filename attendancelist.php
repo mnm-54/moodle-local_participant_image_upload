@@ -34,9 +34,13 @@ if (!is_siteadmin()) {
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
-$month = optional_param('m', date('m'), PARAM_RAW);
-$day = optional_param('d', date('d'), PARAM_RAW);
-$year = optional_param('y', date('y'), PARAM_RAW);
+$from_month = optional_param('fm', date('m'), PARAM_RAW);
+$from_day = optional_param('fd', date('d'), PARAM_RAW);
+$from_year = optional_param('fy', date('y'), PARAM_RAW);
+
+$to_month = optional_param('tm', date('m'), PARAM_RAW);
+$to_day = optional_param('td', date('d'), PARAM_RAW);
+$to_year = optional_param('ty', date('y'), PARAM_RAW);
 
 if ($courseid == 0) {
     redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
@@ -44,8 +48,16 @@ if ($courseid == 0) {
 
 global $DB, $PAGE;
 
-$studentdata = student_attandancelist($courseid, $month, $day, $year);
+$studentdata = student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year);
 
+// echo "<pre>";
+// var_dump($studentdata);
+// die;
+
+$students = [];
+foreach($studentdata as $student) {
+    $student->timedate = date('m-d-Y H:i:s', $student->time);
+}
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
 $templatecontext = (object)[
@@ -60,14 +72,23 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
 $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
-    $month, $day, $year,
+    $from_month, $from_day, $from_year, $to_month, $to_day, $to_year,
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
 ));
 
 echo $OUTPUT->download_dataformat_selector(
     get_string('export', 'local_participant_image_upload'), 
     'download.php', 
-    'dataformat', array('cid' => $courseid, 'm' => $month, 'd' => $day, 'y' => $year)
+    'dataformat', 
+    array(
+        'cid' => $courseid, 
+        'fm' => $from_month, 
+        'fd' => $from_day, 
+        'fy' => $from_year, 
+        'tm' => $to_month, 
+        'td' => $to_day, 
+        'ty' => $to_year
+    )
 );
 
 echo $OUTPUT->footer();
