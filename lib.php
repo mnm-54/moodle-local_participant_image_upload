@@ -116,6 +116,29 @@ function student_attandancelist($courseid, $from, $to, $sort) {
     return $studentdata;
 }
 
+function student_attendance_update($courseid, $studentid, $sessionid) {
+    global $DB;
+
+    $record = $DB->get_record('block_face_recog_attendance', array(
+                    'course_id' => $courseid,
+                    'student_id' => $studentid,
+                    'session_id' => $sessionid
+                ));
+    if(empty($record)) {
+        $record = new stdClass();
+        $record->student_id = $studentid;
+        $record->course_id = $courseid;
+        $record->session_id = $sessionid;
+        $record->time = time();
+        
+        $DB->insert_record('block_face_recog_attendance', $record);
+    } else {
+        $record->time = time();
+        
+        $DB->update_record('block_face_recog_attendance', $record);
+    }
+}
+
 function is_manager() {
     global $DB, $USER;
     $roleid = $DB->get_field('role', 'id', ['shortname' => 'manager']);

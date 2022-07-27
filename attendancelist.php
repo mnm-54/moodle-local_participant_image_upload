@@ -70,6 +70,8 @@ $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $course
 $templatecontext = (object)[
     'course_name' => $coursename->fullname,
     'courseid' => $courseid,
+    'courselist_url' => new moodle_url("/local/participant_image_upload/courselist.php?cid=" . $courseid),
+    'studentlist_url' => new moodle_url("/local/participant_image_upload/manage.php?cid=" . $courseid),
     'studentlist' => array_values($studentdata),
     'date' => date("Y/m/d"),
     'flag' => strtolower($sort)

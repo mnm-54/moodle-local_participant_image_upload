@@ -34,6 +34,17 @@
   
 
 <h1>{{ course_name }}</h1>
+
+<a class="btn btn-primary mb-5" href="{{ courselist_url }}">
+  {{#str}} course_list, local_participant_image_upload {{/str}}
+</a>
+
+<br>
+
+<a class="btn btn-primary mb-5" href="{{ studentlist_url }}">
+  {{#str}} student_list, local_participant_image_upload {{/str}}
+</a>
+
 <div class="d-flex" style="width: 70%;">
   <label for="from_date" class="mt-auto pr-2">From: </label>
   <input type="text" class="form-control" id="from_date" placeholder="Select a date">
