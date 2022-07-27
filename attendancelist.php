@@ -34,13 +34,6 @@ if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
-// $from_month = optional_param('fm', date('m'), PARAM_RAW);
-// $from_day = optional_param('fd', date('d'), PARAM_RAW);
-// $from_year = optional_param('fy', date('y'), PARAM_RAW);
-
-// $to_month = optional_param('tm', date('m'), PARAM_RAW);
-// $to_day = optional_param('td', date('d'), PARAM_RAW);
-// $to_year = optional_param('ty', date('y'), PARAM_RAW);
 $from = optional_param('from', mktime(-5,1,0), PARAM_RAW);  // Get the starting of date (12:01 AM)
 $to = optional_param('to', mktime(18,59,59), PARAM_RAW);  // Get the end of date (11:59 PM)
 $sort = optional_param('sort', 'ASC', PARAM_RAW);
@@ -90,19 +83,16 @@ $PAGE->requires->js_call_amd('local_participant_image_upload/date_time_handler',
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
 ));
 
-// echo $OUTPUT->download_dataformat_selector(
-//     get_string('export', 'local_participant_image_upload'), 
-//     'download.php', 
-//     'dataformat', 
-//     array(
-//         'cid' => $courseid, 
-//         'fm' => $from_month, 
-//         'fd' => $from_day, 
-//         'fy' => $from_year, 
-//         'tm' => $to_month, 
-//         'td' => $to_day, 
-//         'ty' => $to_year
-//     )
-// );
+echo $OUTPUT->download_dataformat_selector(
+    get_string('export', 'local_participant_image_upload'), 
+    'download.php', 
+    'dataformat', 
+    array(
+        'cid' => $courseid, 
+        'from' => $from,
+        'to' => $to,
+        'sort' => $sort,
+    )
+);
 
 echo $OUTPUT->footer();
