@@ -24,6 +24,26 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($hassiteconfig) {
-    $ADMIN->add('localplugins', new admin_externalpage('local_participant_image_upload', get_string('pluginname', 'local_participant_image_upload'), $CFG->wwwroot . '/local/participant_image_upload/courselist.php'));
+require_once(__DIR__ . '/../../config.php');
+
+// For admin users and manager users. 
+// This block adds a link to site administraion root. 
+if (has_capability('local/participant_image_upload:view', context_system::instance())) {
+    $ADMIN->add('root', new admin_category('local_attendance_plugin', get_string('attendance_plugin', 'local_participant_image_upload')));
+    $ADMIN->add('local_attendance_plugin', 
+                new admin_externalpage('local_plugin_courselist', 
+                get_string('pluginname', 'local_participant_image_upload'), 
+                $CFG->wwwroot . '/local/participant_image_upload/courselist.php',
+                'local/participant_image_upload:view'
+            ));
 }
+
+// For Admin users.
+if($hassiteconfig) {
+    $ADMIN->add('localplugins', 
+            new admin_externalpage('local_participant_image_upload', 
+            get_string('pluginname', 'local_participant_image_upload'), 
+            $CFG->wwwroot . '/local/participant_image_upload/courselist.php'
+        ));
+}
+    

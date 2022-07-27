@@ -48,3 +48,5 @@ $string['stop_text'] = 'Session stopped!';
 $string['session_name'] = 'Session name';
 $string['session_id'] = 'Session id';
 $string['time'] = 'Time';
+$string['attendance_plugin'] = 'Attendance Plugin';
+$string['no_permission'] = "You don't have proper permission to view this page";

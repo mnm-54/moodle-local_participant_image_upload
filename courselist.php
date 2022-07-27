@@ -29,8 +29,9 @@ $PAGE->set_url(new moodle_url('/local/participant_image_upload/courselist.php'))
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_courselist', 'local_participant_image_upload'));
 
-if (!is_siteadmin()) {
-    redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
+// !is_siteadmin()
+if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+    redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 global $DB, $PAGE, $USER;

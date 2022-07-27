@@ -24,6 +24,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/participant_image_upload/classes/form/upload_image_form.php');
+require_once('lib.php');
 
 $PAGE->set_url(new moodle_url('/local/participant_image_upload/upload_image.php'));
 $PAGE->set_context(\context_system::instance());
@@ -31,8 +32,8 @@ $PAGE->set_title(get_string('title_upload', 'local_participant_image_upload'));
 
 require_login();
 
-if (!is_siteadmin()) {
-    redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
+if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+    redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);

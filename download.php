@@ -26,8 +26,8 @@ require_once(__DIR__ . '/../../config.php');
 require_once('lib.php');
 
 require_login();
-if (!is_siteadmin()) {
-    redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
+if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+    redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
