@@ -68,8 +68,8 @@ $students = [];
 
 foreach ($studentdata as $key => $result) {
     $temp = [];
-    $temp['student_id'] = $result->student_id;
-    $temp['student'] = $result->student;
+    $temp['student_id'] = $result->id;
+    $temp['student'] = $result->username;
     $temp['firstname'] =$result->firstname;
     $temp['lastname'] =$result->lastname;
     $temp['email'] =$result->email;
@@ -90,9 +90,9 @@ foreach ($studentdata as $key => $result) {
         $temp['timedate'] = "N/A";
     }
     if ($temp['time']) {
-        $temp['time'] = 'present';
+        $temp['time'] = 'Present';
     } else {
-        $temp['time'] = 'absent';
+        $temp['time'] = 'Absent';
     }
     array_push($students, $temp);
 

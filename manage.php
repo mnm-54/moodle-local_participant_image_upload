@@ -60,7 +60,7 @@ foreach($studentdata as $student) {
         $student->session = true;
         $student->session_id = $activesession->session_id;
         $record = $DB->get_record('block_face_recog_attendance', array('student_id' => $student->id, 'session_id' => $activesession->session_id));
-        if($record->time > 0) {
+        if($record) {
             $student->present = true;
         } else {
             $student->present = false;

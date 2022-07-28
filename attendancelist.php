@@ -44,16 +44,19 @@ if ($courseid == 0) {
 
 global $DB, $PAGE;
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
+// echo "<pre>";
+// var_dump($studentdata);
+// die;
 
 $students = [];
 
 foreach ($studentdata as $key => $result) {
     $temp = [];
-    $temp['student'] = $result->student;
+    $temp['student'] = $result->username;
     $temp['firstname'] =$result->firstname;
     $temp['lastname'] =$result->lastname;
     $temp['email'] =$result->email;
-    $temp['student_id'] = $result->student_id;
+    $temp['student_id'] = $result->id;
     $temp['session_id'] = $result->session_id;
     $temp['session_name'] = $result->session_name;
     $temp['course_id'] = $result->course_id;

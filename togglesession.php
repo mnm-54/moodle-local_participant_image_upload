@@ -4,8 +4,6 @@ require_once(__DIR__ . '/../../config.php');
 
 require_once(__DIR__ . '/lib.php');
 
-
-
 $PAGE->set_url(new moodle_url('/local/participant_image_upload/test.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_courselist', 'local_participant_image_upload'));
@@ -18,7 +16,7 @@ if ($active) {
 
     $session_id =  toggle_window($course_id, $USER->id, $session_id, 1);
 
-    insert_attendance($course_id, $session_id);
+    // insert_attendance($course_id, $session_id);
 
     redirect(new moodle_url('/local/participant_image_upload/courselist.php'), get_string('start_text', 'local_participant_image_upload'));
 } else {

@@ -106,17 +106,40 @@ function check_student_attandance($cid, $sid, $time)
 function student_attandancelist($courseid, $from, $to, $sort) {
     global $DB;
 
-    $sql = "SELECT u.id AS student_id, u.username AS student, u.firstname, u.lastname, u.email, pw.session_id,c.id AS course_id, fra.time, pw.session_name
-            FROM {role_assignments} r
-            JOIN {user} u on r.userid = u.id
-            JOIN {role} rn on r.roleid = rn.id
-            JOIN {context} ctx on r.contextid = ctx.id
-            JOIN {course} c on ctx.instanceid = c.id
-            LEFT JOIN {local_piu_window} pw on c.id = pw.course_id
-            LEFT JOIN {block_face_recog_attendance} fra on c.id = fra.course_id AND u.id = fra.student_id AND pw.session_id = fra.session_id
-            WHERE rn.shortname = 'student' AND c.id=" . $courseid . " AND pw.session_id in 
-            (SELECT session_id FROM {block_face_recog_attendance} fra WHERE fra.time > " . $from . " AND fra.time < " . $to . ") 
-            GROUP BY student_id,session_id";
+    $sql = "SELECT DISTINCT session_id 
+    FROM {block_face_recog_attendance}
+    WHERE ({block_face_recog_attendance}.time > " . $from . " AND {block_face_recog_attendance}.time < " . $to .")";
+    $sessionlist1 = $DB->get_records_sql($sql);
+
+    $sql = "SELECT session_id 
+    FROM {local_piu_window} 
+    WHERE {local_piu_window}.session_id > " . $from . " AND {local_piu_window}.session_id < " . $to . "
+        AND {local_piu_window}.session_id NOT IN (SELECT session_id FROM mdl_block_face_recog_attendance)";
+    $sessionlist2 = $DB->get_records_sql($sql);
+
+    $distintsessions = array();
+    foreach($sessionlist1 as $session) {
+        array_push($distintsessions, $session->session_id);
+    }
+    foreach($sessionlist2 as $session) {
+        array_push($distintsessions, $session->session_id);
+    }
+
+    $string = implode(", ", $distintsessions);
+ 
+    $sql = "SELECT {user}.id, {user}.username, {local_piu_window}.session_id, {local_piu_window}.session_name, {course}.id course_id, {block_face_recog_attendance}.time, {user}.firstname, {user}.lastname, {user}.email
+        FROM {role_assignments}
+        JOIN {user} on {role_assignments}.userid = {user}.id
+        JOIN {role} on {role_assignments}.roleid = {role}.id
+        JOIN {context} on {role_assignments}.contextid = {context}.id
+        JOIN {course} on {context}.instanceid = {course}.id
+        LEFT JOIN {local_piu_window} on {course}.id = {local_piu_window}.course_id
+        LEFT JOIN {block_face_recog_attendance} on {course}.id = {block_face_recog_attendance}.course_id AND {user}.id = {block_face_recog_attendance}.student_id AND {local_piu_window}.session_id = {block_face_recog_attendance}.session_id
+        WHERE {role}.shortname = 'student' AND {course}.id=2 AND {local_piu_window}.session_id in 
+        (" . $string . ") 
+        GROUP BY {user}.id, {local_piu_window}.session_id
+        ORDER BY {local_piu_window}.session_id " . $sort;
+
     $studentdata = $DB->get_recordset_sql($sql);
     return $studentdata;
 }
