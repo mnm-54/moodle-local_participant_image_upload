@@ -103,23 +103,80 @@ function check_student_attandance($cid, $sid, $time)
     }
 }
 
-/**
- * $return student attendance list for the day
- */
-function student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year)
-{
+function student_attandancelist($courseid, $from, $to, $sort) {
     global $DB;
-    $from = mktime(0, 0, 0, $from_month, $from_day, $from_year);
-    $to = mktime(23, 59, 59,  $to_month, $to_day, $to_year);
 
-    $sql = "SELECT fra.id as id, u.id AS uid, u.username AS student, u.firstname, u.lastname, u.email, fra.session_id, fra.time, lpi.session_name
-            FROM {block_face_recog_attendance} fra 
-            JOIN {user} u on fra.student_id = u.id  
-            JOIN {local_piu_window} lpi on fra.session_id = lpi.session_id
-            WHERE fra.session_id>" . $from . " and fra.session_id<" . $to . " and fra.course_id =" . $courseid . " order by lpi.session_id";
+    $sql = "SELECT DISTINCT session_id 
+    FROM {block_face_recog_attendance}
+    WHERE ({block_face_recog_attendance}.time > " . $from . " AND {block_face_recog_attendance}.time < " . $to .")";
+    $sessionlist1 = $DB->get_records_sql($sql);
 
-    $studentdata = $DB->get_records_sql($sql);
+    $sql = "SELECT session_id 
+    FROM {local_piu_window} 
+    WHERE {local_piu_window}.session_id > " . $from . " AND {local_piu_window}.session_id < " . $to . "
+        AND {local_piu_window}.session_id NOT IN (SELECT session_id FROM mdl_block_face_recog_attendance)";
+    $sessionlist2 = $DB->get_records_sql($sql);
+
+    $distintsessions = array();
+    foreach($sessionlist1 as $session) {
+        array_push($distintsessions, $session->session_id);
+    }
+    foreach($sessionlist2 as $session) {
+        array_push($distintsessions, $session->session_id);
+    }
+
+    $string = implode(", ", $distintsessions);
+ 
+    $sql = "SELECT {user}.id, {user}.username, {local_piu_window}.session_id, {local_piu_window}.session_name, {course}.id course_id, {block_face_recog_attendance}.time, {user}.firstname, {user}.lastname, {user}.email
+        FROM {role_assignments}
+        JOIN {user} on {role_assignments}.userid = {user}.id
+        JOIN {role} on {role_assignments}.roleid = {role}.id
+        JOIN {context} on {role_assignments}.contextid = {context}.id
+        JOIN {course} on {context}.instanceid = {course}.id
+        LEFT JOIN {local_piu_window} on {course}.id = {local_piu_window}.course_id
+        LEFT JOIN {block_face_recog_attendance} on {course}.id = {block_face_recog_attendance}.course_id AND {user}.id = {block_face_recog_attendance}.student_id AND {local_piu_window}.session_id = {block_face_recog_attendance}.session_id
+        WHERE {role}.shortname = 'student' AND {course}.id=2 AND {local_piu_window}.session_id in 
+        (" . $string . ") 
+        GROUP BY {user}.id, {local_piu_window}.session_id
+        ORDER BY {local_piu_window}.session_id " . $sort;
+
+    $studentdata = $DB->get_recordset_sql($sql);
     return $studentdata;
+}
+
+function student_attendance_update($courseid, $studentid, $sessionid) {
+    global $DB;
+
+    $record = $DB->get_record('block_face_recog_attendance', array(
+                    'course_id' => $courseid,
+                    'student_id' => $studentid,
+                    'session_id' => $sessionid
+                ));
+    if(empty($record)) {
+        $record = new stdClass();
+        $record->student_id = $studentid;
+        $record->course_id = $courseid;
+        $record->session_id = $sessionid;
+        $record->time = time();
+        
+        $DB->insert_record('block_face_recog_attendance', $record);
+    } else {
+        $record->time = time();
+        
+        $DB->update_record('block_face_recog_attendance', $record);
+    }
+}
+
+function is_manager() {
+    global $DB, $USER;
+    $roleid = $DB->get_field('role', 'id', ['shortname' => 'manager']);
+    return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
+}
+
+function is_coursecreator() {
+    global $DB, $USER;
+    $roleid = $DB->get_field('role', 'id', ['shortname' => 'coursecreator']);
+    return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
 }
 
 function insert_attendance($courseid, $session_id)

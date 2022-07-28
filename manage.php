@@ -31,8 +31,8 @@ $PAGE->set_title(get_string('title_manage', 'local_participant_image_upload'));
 
 require_login();
 
-if (!is_siteadmin()) {
-    redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
+if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+    redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
@@ -52,6 +52,24 @@ $sql = "SELECT u.id id, (u.username) 'student', u.firstname , u.lastname, u.emai
 
 $studentdata = $DB->get_records_sql($sql);
 
+
+// Check if there is any active session and the student is present or not.
+foreach($studentdata as $student) {
+    $activesession = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'active' => 1));
+    if($activesession) {
+        $student->session = true;
+        $student->session_id = $activesession->session_id;
+        $record = $DB->get_record('block_face_recog_attendance', array('student_id' => $student->id, 'session_id' => $activesession->session_id));
+        if($record) {
+            $student->present = true;
+        } else {
+            $student->present = false;
+        }
+    } else {
+        $student->session = false;
+    }
+}
+
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
 
@@ -63,9 +81,11 @@ foreach ($studentdata as $student) {
 $templatecontext = (object)[
     'course_name' => $coursename->fullname,
     'courseid' => $courseid,
+    'courselist_url' => new moodle_url("/local/participant_image_upload/courselist.php?cid=" . $courseid),
     'attandancelist_url' => new moodle_url("/local/participant_image_upload/attendancelist.php?cid=" . $courseid),
     'studentlist' => array_values($studentdata),
-    'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php')
+    'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php'),
+    'actionurl' => $CFG->wwwroot . '/local/participant_image_upload/submitattendance.php',
 ];
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/studentlist', $templatecontext);

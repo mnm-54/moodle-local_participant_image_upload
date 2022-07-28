@@ -21,18 +21,56 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+<!-- Datatables library -->
 <link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
- 
 <script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
-    
+
+<!-- Moment.js  -->
+<script src="./thirdpartylibs/momentjs/moment-with-locales.min.js"  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Bootstrap datetime picker library -->
+<link rel="stylesheet" href="./thirdpartylibs/Date-Time-Picker-Bootstrap-4/build/css/bootstrap-datetimepicker.css">
+<script src="./thirdpartylibs/Date-Time-Picker-Bootstrap-4/build/js/bootstrap-datetimepicker.min.js"></script>
+  
+
 <h1>{{ course_name }}</h1>
-<label for="from_date">From:</label>
-<input type="date" id="from_date" name="from_date">
-<label for="to_date">To:</label>
-<input type="date" id="to_date" name="to_date">
-<button class="btn btn-primary" id="date_check">
-    {{#str}} check, local_participant_image_upload {{/str}}
-</button>
+
+<a class="btn btn-primary mb-5" href="{{ courselist_url }}">
+  {{#str}} course_list, local_participant_image_upload {{/str}}
+</a>
+
+<br>
+
+<a class="btn btn-primary mb-5" href="{{ studentlist_url }}">
+  {{#str}} student_list, local_participant_image_upload {{/str}}
+</a>
+
+<div class="d-flex" style="width: 70%;">
+  <label for="from_date" class="mt-auto pr-2">From: </label>
+  <input type="text" class="form-control" id="from_date" placeholder="Select a date">
+  <label for="to_date" class="mt-auto px-2">To: </label>
+  <input type="text" class="form-control" id="to_date" placeholder="Select a date">
+
+  <div class="form-check form-check-inline ml-3">
+    <input class="form-check-input" type="radio" name="sortOrder" id="asc" value="ASC">
+    <label class="form-check-label" for="asc">Ascending</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="sortOrder" id="desc" value="DESC">
+    <label class="form-check-label" for="desc">Descending</label>
+  </div>
+
+  <button class="btn btn-primary ml-3" id="date_check">
+      {{#str}} check, local_participant_image_upload {{/str}}
+  </button>
+</div>
+<script>
+  $(function () {
+      $('#from_date').datetimepicker();
+      $('#to_date').datetimepicker();
+      
+  });
+</script>
 
 
 <table class="table table-hover" border="1" id="data_table">
@@ -81,7 +119,9 @@
 
 <script>
 $(document).ready( function () {
-    $('#data_table').DataTable();
+    $('#data_table').DataTable({
+      order: [[1, '{{flag}}']],
+    });
 } );
 </script>
 

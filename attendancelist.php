@@ -29,46 +29,74 @@ $PAGE->set_url(new moodle_url('/local/participant_image_upload/attendancelist.ph
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_manage', 'local_participant_image_upload'));
 
-if (!is_siteadmin()) {
-    redirect($CFG->wwwroot, 'Dont have proper permission to view the page', null, \core\output\notification::NOTIFY_ERROR);
+if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+    redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
-$from_month = optional_param('fm', date('m'), PARAM_RAW);
-$from_day = optional_param('fd', date('d'), PARAM_RAW);
-$from_year = optional_param('fy', date('y'), PARAM_RAW);
-
-$to_month = optional_param('tm', date('m'), PARAM_RAW);
-$to_day = optional_param('td', date('d'), PARAM_RAW);
-$to_year = optional_param('ty', date('y'), PARAM_RAW);
+$from = optional_param('from', mktime(-5,1,0), PARAM_RAW);  // Get the starting of date (12:01 AM)
+$to = optional_param('to', mktime(18,59,59), PARAM_RAW);  // Get the end of date (11:59 PM)
+$sort = optional_param('sort', 'ASC', PARAM_RAW);
 
 if ($courseid == 0) {
-    redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
+    redirect($CFG->wwwroot, get_string('no_course_selected', 'local_participant_image'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
 global $DB, $PAGE;
-
-$studentdata = student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year);
+$studentdata = student_attandancelist($courseid, $from, $to, $sort);
+// echo "<pre>";
+// var_dump($studentdata);
+// die;
 
 $students = [];
-foreach($studentdata as $student) {
-    $student->timedate = date('m-d-Y H:i:s', $student->time);
+
+foreach ($studentdata as $key => $result) {
+    $temp = [];
+    $temp['student'] = $result->username;
+    $temp['firstname'] =$result->firstname;
+    $temp['lastname'] =$result->lastname;
+    $temp['email'] =$result->email;
+    $temp['student_id'] = $result->id;
+    $temp['session_id'] = $result->session_id;
+    $temp['session_name'] = $result->session_name;
+    $temp['course_id'] = $result->course_id;
+    $temp['time'] = $result->time;
+    
+    if($temp['time']) {
+        // New Timezone Object.
+        $timezone = new DateTimeZone('Asia/Kolkata');
+
+        // Converting timestamp to date time format.
+        $date =  new DateTime('@'.$temp['time'], $timezone);   
+        $date->setTimezone($timezone);
+        $temp['timedate'] = $date->format('m-d-Y H:i:s');
+    } else {
+        $temp['timedate'] = "N/A";
+    }
+    array_push($students, $temp);
+
 }
+
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
 $templatecontext = (object)[
     'course_name' => $coursename->fullname,
     'courseid' => $courseid,
-    'studentlist' => array_values($studentdata),
-    'date' => date("Y/m/d")
+    'courselist_url' => new moodle_url("/local/participant_image_upload/courselist.php?cid=" . $courseid),
+    'studentlist_url' => new moodle_url("/local/participant_image_upload/manage.php?cid=" . $courseid),
+    'studentlist' => array_values($students),
+    'date' => date("Y/m/d"),
+    'flag' => strtolower($sort)
 ];
 
-
 echo $OUTPUT->header();
-
 echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
-$PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
-    $from_month, $from_day, $from_year, $to_month, $to_day, $to_year,
+// $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
+//     $from_month, $from_day, $from_year, $to_month, $to_day, $to_year,
+//     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
+// ));
+$PAGE->requires->js_call_amd('local_participant_image_upload/date_time_handler', 'init', array(
+    $from, $to, $sort,
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
 ));
 
@@ -78,12 +106,9 @@ echo $OUTPUT->download_dataformat_selector(
     'dataformat', 
     array(
         'cid' => $courseid, 
-        'fm' => $from_month, 
-        'fd' => $from_day, 
-        'fy' => $from_year, 
-        'tm' => $to_month, 
-        'td' => $to_day, 
-        'ty' => $to_year
+        'from' => $from,
+        'to' => $to,
+        'sort' => $sort,
     )
 );
 
