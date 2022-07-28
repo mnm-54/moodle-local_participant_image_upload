@@ -33,9 +33,15 @@ if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
     redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
+// Setting default value.
+date_default_timezone_set('Asia/kolkata');
+$d1 = mktime(0, 0, 0);
+$d2 = mktime(23, 59, 59);
+
 $courseid = optional_param('cid', 0, PARAM_INT);
-$from = optional_param('from', mktime(-5,1,0), PARAM_RAW);  // Get the starting of date (12:01 AM)
-$to = optional_param('to', mktime(18,59,59), PARAM_RAW);  // Get the end of date (11:59 PM)
+$from = optional_param('from', $d1, PARAM_RAW);  
+$to = optional_param('to', $d2, PARAM_RAW);
+
 $sort = optional_param('sort', 'ASC', PARAM_RAW);
 
 if ($courseid == 0) {
@@ -44,9 +50,6 @@ if ($courseid == 0) {
 
 global $DB, $PAGE;
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
-// echo "<pre>";
-// var_dump($studentdata);
-// die;
 
 $students = [];
 
@@ -91,10 +94,7 @@ $templatecontext = (object)[
 
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
-// $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
-//     $from_month, $from_day, $from_year, $to_month, $to_day, $to_year,
-//     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
-// ));
+
 $PAGE->requires->js_call_amd('local_participant_image_upload/date_time_handler', 'init', array(
     $from, $to, $sort,
     $CFG->wwwroot . "/local/participant_image_upload/attendancelist.php" . "?cid=" . $courseid
