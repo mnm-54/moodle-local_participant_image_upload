@@ -46,16 +46,34 @@ global $DB, $PAGE;
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
 
 $students = [];
-foreach($studentdata as $student) {
-    // New Timezone Object.
-    $timezone = new DateTimeZone('Asia/Kolkata');
 
-    // Converting timestamp to date time format.
-    $date =  new DateTime('@'.$student->time, $timezone);   
-    $date->setTimezone($timezone);
-    $student->timedate = $date->format('m-d-Y H:i:s');
-    //$student->timedate = date('m-d-Y H:i:s', $student->time);
+foreach ($studentdata as $key => $result) {
+    $temp = [];
+    $temp['student'] = $result->student;
+    $temp['firstname'] =$result->firstname;
+    $temp['lastname'] =$result->lastname;
+    $temp['email'] =$result->email;
+    $temp['student_id'] = $result->student_id;
+    $temp['session_id'] = $result->session_id;
+    $temp['session_name'] = $result->session_name;
+    $temp['course_id'] = $result->course_id;
+    $temp['time'] = $result->time;
+    
+    if($temp['time']) {
+        // New Timezone Object.
+        $timezone = new DateTimeZone('Asia/Kolkata');
+
+        // Converting timestamp to date time format.
+        $date =  new DateTime('@'.$temp['time'], $timezone);   
+        $date->setTimezone($timezone);
+        $temp['timedate'] = $date->format('m-d-Y H:i:s');
+    } else {
+        $temp['timedate'] = "N/A";
+    }
+    array_push($students, $temp);
+
 }
+
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');
 
 $templatecontext = (object)[
@@ -63,14 +81,12 @@ $templatecontext = (object)[
     'courseid' => $courseid,
     'courselist_url' => new moodle_url("/local/participant_image_upload/courselist.php?cid=" . $courseid),
     'studentlist_url' => new moodle_url("/local/participant_image_upload/manage.php?cid=" . $courseid),
-    'studentlist' => array_values($studentdata),
+    'studentlist' => array_values($students),
     'date' => date("Y/m/d"),
     'flag' => strtolower($sort)
 ];
 
-
 echo $OUTPUT->header();
-
 echo $OUTPUT->render_from_template('local_participant_image_upload/attendancelist', $templatecontext);
 // $PAGE->requires->js_call_amd('local_participant_image_upload/date_handler', 'init', array(
 //     $from_month, $from_day, $from_year, $to_month, $to_day, $to_year,

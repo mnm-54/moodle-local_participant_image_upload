@@ -43,44 +43,78 @@ if ($courseid == 0) {
 
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
 
-foreach($studentdata as $student) {
-    if($student->time) {
-        // New Timezone Object
+// foreach($studentdata as $student) {
+//     if($student->time) {
+//         // New Timezone Object
+//         $timezone = new DateTimeZone('Asia/Kolkata');
+
+//         // Converting timestamp to date time format.
+//         $date =  new DateTime('@'.$student->time, $timezone);   
+//         $date->setTimezone($timezone);
+//         $student->timedate = $date->format('m-d-Y H:i:s');
+//     } else {
+//         $student->timedate = "N/A";
+//     }
+
+//     if ($student->time) {
+//         $student->time = 'present';
+//     } else {
+//         $student->time = 'absent';
+//     }
+//     //$student->timedate = date('m-d-Y H:i:s', $student->time);
+// }
+
+$students = [];
+
+foreach ($studentdata as $key => $result) {
+    $temp = [];
+    $temp['student_id'] = $result->student_id;
+    $temp['student'] = $result->student;
+    $temp['firstname'] =$result->firstname;
+    $temp['lastname'] =$result->lastname;
+    $temp['email'] =$result->email;
+    $temp['session_id'] = $result->session_id;
+    $temp['session_name'] = $result->session_name;
+    $temp['course_id'] = $result->course_id;
+    $temp['time'] = $result->time;
+    
+    if($temp['time']) {
+        // New Timezone Object.
         $timezone = new DateTimeZone('Asia/Kolkata');
 
         // Converting timestamp to date time format.
-        $date =  new DateTime('@'.$student->time, $timezone);   
+        $date =  new DateTime('@'.$temp['time'], $timezone);   
         $date->setTimezone($timezone);
-        $student->timedate = $date->format('m-d-Y H:i:s');
+        $temp['timedate'] = $date->format('m-d-Y H:i:s');
     } else {
-        $student->timedate = "N/A";
+        $temp['timedate'] = "N/A";
     }
+    if ($temp['time']) {
+        $temp['time'] = 'present';
+    } else {
+        $temp['time'] = 'absent';
+    }
+    array_push($students, $temp);
 
-    if ($student->time) {
-        $student->time = 'present';
-    } else {
-        $student->time = 'absent';
-    }
-    //$student->timedate = date('m-d-Y H:i:s', $student->time);
 }
 
 $columns = array(
-    'id' => 'ID',
-    'uid' => 'Student ID',
+    'student_id' => 'Student ID',
     'student' => 'Student Name',
     'firstname' => 'Firstname',
     'lastname' => 'Lastname',
     'email' => 'Email',
     'session_id' => 'Session ID',
-    'time' => 'Attendance',
     'session_name' => 'Session Name',
+    'course_id' => 'Course ID',
+    'time' => 'Attendance',
     'timedate' => 'Time',
 );
 
 //$filename = 'student_attendance_' . $month . '-' . $day . '-' . $year;
 $filename = 'student_attendance_' . $courseid;
 
-\core\dataformat::download_data($filename, $dataformat, $columns, $studentdata, function ($record) {
+\core\dataformat::download_data($filename, $dataformat, $columns, $students, function ($record) {
     // Process the data in some way.
     // You can add and remove columns as needed
     // as long as the resulting data matches the $column metadata.

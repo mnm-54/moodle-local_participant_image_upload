@@ -106,13 +106,18 @@ function check_student_attandance($cid, $sid, $time)
 function student_attandancelist($courseid, $from, $to, $sort) {
     global $DB;
 
-    $sql = "SELECT fra.id as id, u.id AS uid, u.username AS student, u.firstname, u.lastname, u.email, fra.session_id, fra.time, lpi.session_name
-            FROM {block_face_recog_attendance} fra 
-            JOIN {user} u on fra.student_id = u.id  
-            JOIN {local_piu_window} lpi on fra.session_id = lpi.session_id
-            WHERE fra.session_id>" . $from . " and fra.session_id<" . $to . " and fra.course_id =" . $courseid . " order by lpi.session_id ". $sort;
-
-    $studentdata = $DB->get_records_sql($sql);
+    $sql = "SELECT u.id AS student_id, u.username AS student, u.firstname, u.lastname, u.email, pw.session_id,c.id AS course_id, fra.time, pw.session_name
+            FROM {role_assignments} r
+            JOIN {user} u on r.userid = u.id
+            JOIN {role} rn on r.roleid = rn.id
+            JOIN {context} ctx on r.contextid = ctx.id
+            JOIN {course} c on ctx.instanceid = c.id
+            LEFT JOIN {local_piu_window} pw on c.id = pw.course_id
+            LEFT JOIN {block_face_recog_attendance} fra on c.id = fra.course_id AND u.id = fra.student_id AND pw.session_id = fra.session_id
+            WHERE rn.shortname = 'student' AND c.id=" . $courseid . " AND pw.session_id in 
+            (SELECT session_id FROM {block_face_recog_attendance} fra WHERE fra.time > " . $from . " AND fra.time < " . $to . ") 
+            GROUP BY student_id,session_id";
+    $studentdata = $DB->get_recordset_sql($sql);
     return $studentdata;
 }
 
