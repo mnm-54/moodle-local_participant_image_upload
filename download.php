@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * List of student with attendance
+ * Download attendance report.
  *
  * @package    local_participant_image_upload
  * @copyright  2022 munem
@@ -31,13 +31,6 @@ if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
 }
 
 $courseid = optional_param('cid', 0, PARAM_INT);
-// $from_month = optional_param('fm', date('m'), PARAM_RAW);
-// $from_day = optional_param('fd', date('d'), PARAM_RAW);
-// $from_year = optional_param('fy', date('y'), PARAM_RAW);
-
-// $to_month = optional_param('tm', date('m'), PARAM_RAW);
-// $to_day = optional_param('td', date('d'), PARAM_RAW);
-// $to_year = optional_param('ty', date('y'), PARAM_RAW);
 $from = optional_param('from', mktime(-5,1,0), PARAM_RAW);  // Get the starting of date (12:01 AM)
 $to = optional_param('to', mktime(18,59,59), PARAM_RAW);  // Get the end of date (11:59 PM)
 $sort = optional_param('sort', 'ASC', PARAM_RAW);
@@ -45,18 +38,20 @@ $sort = optional_param('sort', 'ASC', PARAM_RAW);
 $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
 if ($courseid == 0) {
-    redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
+    redirect($CFG->wwwroot, get_string('no_course_selected', 'local_participant_image'), null, \core\output\notification::NOTIFY_WARNING);
 }
-
-
 
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
 
 foreach($studentdata as $student) {
     if($student->time) {
-        $date = new DateTime( "now" , \core_date::get_user_timezone_object()); 
-        $date->setTimestamp($student->time); 
-        $student->timedate = userdate($date->getTimestamp()); 
+        // New Timezone Object
+        $timezone = new DateTimeZone('Asia/Kolkata');
+
+        // Converting timestamp to date time format.
+        $date =  new DateTime('@'.$student->time, $timezone);   
+        $date->setTimezone($timezone);
+        $student->timedate = $date->format('m-d-Y H:i:s');
     } else {
         $student->timedate = "N/A";
     }
@@ -66,7 +61,6 @@ foreach($studentdata as $student) {
     } else {
         $student->time = 'absent';
     }
-    
     //$student->timedate = date('m-d-Y H:i:s', $student->time);
 }
 

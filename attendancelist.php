@@ -39,23 +39,21 @@ $to = optional_param('to', mktime(18,59,59), PARAM_RAW);  // Get the end of date
 $sort = optional_param('sort', 'ASC', PARAM_RAW);
 
 if ($courseid == 0) {
-    redirect($CFG->wwwroot, 'No course selected', null, \core\output\notification::NOTIFY_WARNING);
+    redirect($CFG->wwwroot, get_string('no_course_selected', 'local_participant_image'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
 global $DB, $PAGE;
-// var_dump($from);
-// var_dump($to);
-
-// $studentdata = student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year);
 $studentdata = student_attandancelist($courseid, $from, $to, $sort);
-
 
 $students = [];
 foreach($studentdata as $student) {
-    $date = new DateTime( "now" , \core_date::get_user_timezone_object()); 
-    $date->setTimestamp($student->time); 
-    $student->timedate = userdate($date->getTimestamp()); 
-    
+    // New Timezone Object.
+    $timezone = new DateTimeZone('Asia/Kolkata');
+
+    // Converting timestamp to date time format.
+    $date =  new DateTime('@'.$student->time, $timezone);   
+    $date->setTimezone($timezone);
+    $student->timedate = $date->format('m-d-Y H:i:s');
     //$student->timedate = date('m-d-Y H:i:s', $student->time);
 }
 $coursename = $DB->get_record_select('course', 'id=:cid', array('cid' => $courseid), 'fullname');

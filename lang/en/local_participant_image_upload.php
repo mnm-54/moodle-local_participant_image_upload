@@ -56,3 +56,4 @@ $string['give_attendance'] = 'Give Attendance';
 $string['no_active_session'] = 'No active session';
 $string['course_list'] = 'All courses';
 $string['student_list'] = 'Student list';
+$string['no_course_selected'] = 'No course was selected';
