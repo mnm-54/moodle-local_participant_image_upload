@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * version description
+ * plugin settings
  *
  * @package    local_participant_image_upload
  * @copyright  2022 munem
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2022051000;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061500;        // Requires this Moodle version.
-$plugin->component = 'local_participant_image_upload'; // Full name of the plugin (used for diagnostics)
+if ($hassiteconfig) {
+    $ADMIN->add('localplugins', new admin_externalpage('local_participant_image_upload', get_string('pluginname', 'local_participant_image_upload'), $CFG->wwwroot . '/local/participant_image_upload/courselist.php'));
+}

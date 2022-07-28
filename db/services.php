@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * version description
+ * Web services description
  *
  * @package    local_participant_image_upload
  * @copyright  2022 munem
@@ -24,6 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022051000;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061500;        // Requires this Moodle version.
-$plugin->component = 'local_participant_image_upload'; // Full name of the plugin (used for diagnostics)
+$functions = array(
+    'local_participant_image_upload_active_window' => array(
+        'classname' => 'local_participant_image_upload_api',
+        'methodname'  => 'active_window',
+        'classpath'   => 'local/participant_image_upload/externallib.php',
+        'description' => 'Start or stops attendance window',
+        'type'        => 'write',
+        'ajax' => true,
+    )
+);
+
+$services = array(
+    'local_participant_image_upload_services' => array(
+        'functions' => array(
+            'local_participant_image_upload_active_window'
+        ),
+        'restrictedusers' => 0,
+        // into the administration
+        'enabled' => 1,
+        'shortname' =>  'local_piu_api',
+    )
+);

@@ -19,74 +19,53 @@
     }
 }}
 
-<style>
-  #student_image_listcss {
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  #student_image_listcss td,
-  #student_image_listcss th {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-  #student_image_listcss tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-
-  #student_image_listcss tr:hover {
-    background-color: #ddd;
-  }
-
-  #student_image_listcss th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #ddd;
-    color: black;
-  }
-</style>
+<link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
+ 
+<script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
 
 <h1>{{ course_name }}</h1>
-<button class="btn-primary" onclick="location.href='{{ attandancelist_url }}'">
-  Check Attendance List
-</button>
-<hr />
+<a class="btn btn-primary mb-5" href="{{ attandancelist_url }}">
+  {{#str}} attendance_list, local_participant_image_upload {{/str}}
+</a>
 
-<table border="1" id="student_image_listcss">
+
+<table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
-      <th>Student name</th>
-      <th>Preview</th>
-      <th>Action upload image</th>
+      <th class="bg-primary">{{#str}} student_name, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} email, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} preview, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">{{#str}} action, local_participant_image_upload {{/str}}</th>
     </tr>
   </thead>
-  <hr />
   <tbody>
     {{#studentlist}}
     <tr>
-      <td>{{ student }}</td>
+      <td>{{ firstname }} {{ lastname }}</td>
+      <td>{{ email }}</td>
       <td>
         {{#image_url}}
-        <img src="{{ image_url }}" width="auto" height="100" />
+        <img src="{{ image_url }}" width="150" height="auto" />
         {{/image_url}}
         {{^image_url}}
-        <P style="color: red">Please upload a image first</P>
+        <p style="color: red">{{#str}} notifiy_upload_text, local_participant_image_upload {{/str}}</p>
         {{/image_url}}
       </td>
       <td>
-        <button
-          type="button"
-          class="btn btn-primary"
-          onclick="location.href=
-          '{{ redirecturl }}?cid={{ courseid }}&id={{ id }}'"
-        >
-          upload
-        </button>
+        <a class="btn btn-primary" href="{{redirecturl}}?cid={{ courseid }}&id={{ id }}" >
+          {{#str}} upload_text, local_participant_image_upload {{/str}}
+        </a>
       </td>
     </tr>
+    {{/studentlist}}
   </tbody>
-  {{/studentlist}}
+  
 </table>
+
+<script>
+$(document).ready( function () {
+    $('#data_table').DataTable();
+} );
+</script>

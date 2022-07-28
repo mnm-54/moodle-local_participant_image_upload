@@ -38,7 +38,7 @@ function local_participant_image_upload_pluginfile($course, $cm, $context, $file
 {
     global $DB;
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
 
@@ -69,9 +69,9 @@ function local_participant_image_upload_pluginfile($course, $cm, $context, $file
 }
 
 
-function get_image_url($courseid, $studentid)
+function local_participant_image_upload_get_image_url($studentid)
 {
-    $context = context_course::instance($courseid);
+    $context = context_system::instance();
 
     $fs = get_file_storage();
     if ($files = $fs->get_area_files($context->id, 'local_participant_image_upload', 'student_photo')) {
@@ -106,21 +106,87 @@ function check_student_attandance($cid, $sid, $time)
 /**
  * $return student attendance list for the day
  */
-function student_attandancelist($courseid, $month, $day, $year)
+function student_attandancelist($courseid, $from_month, $from_day, $from_year, $to_month, $to_day, $to_year)
 {
     global $DB;
-    $today = mktime(0, 0, 0, $month, $day, $year);
-    $sql = "SELECT u.id id, (u.username) 'student', fra.time time
-            FROM {role_assignments} r
-            JOIN {user} u on r.userid = u.id
-            JOIN {role} rn on r.roleid = rn.id
-            JOIN {context} ctx on r.contextid = ctx.id
-            JOIN {course} c on ctx.instanceid = c.id
-            left join {block_face_recog_attendance} fra on r.userid =fra.student_id and c.id= fra.course_id and fra.time=" . $today . "
-            WHERE rn.shortname = 'student'
-            AND c.id=" . $courseid . " order by u.id";
+    $from = mktime(0, 0, 0, $from_month, $from_day, $from_year);
+    $to = mktime(23, 59, 59,  $to_month, $to_day, $to_year);
+
+    $sql = "SELECT fra.id as id, u.id AS uid, u.username AS student, u.firstname, u.lastname, u.email, fra.session_id, fra.time, lpi.session_name
+            FROM {block_face_recog_attendance} fra 
+            JOIN {user} u on fra.student_id = u.id  
+            JOIN {local_piu_window} lpi on fra.session_id = lpi.session_id
+            WHERE fra.session_id>" . $from . " and fra.session_id<" . $to . " and fra.course_id =" . $courseid . " order by lpi.session_id";
+
+    $studentdata = $DB->get_records_sql($sql);
+    return $studentdata;
+}
+
+function insert_attendance($courseid, $session_id)
+{
+    global $DB;
+    $sql = "SELECT u.id student_id,c.id course_id
+        FROM {role_assignments} r
+        JOIN {user} u on r.userid = u.id
+        JOIN {role} rn on r.roleid = rn.id
+        JOIN {context} ctx on r.contextid = ctx.id
+        JOIN {course} c on ctx.instanceid = c.id
+        WHERE rn.shortname = 'student'
+        AND c.id=" . $courseid;
 
     $studentdata = $DB->get_records_sql($sql);
 
-    return $studentdata;
+    foreach ($studentdata as $student) {
+        $student->session_id = $session_id;
+        $student->time = 0;
+    }
+
+    // die(var_dump($studentdata));
+
+    $DB->insert_records('block_face_recog_attendance', $studentdata);
+}
+
+function toggle_window($courseid, $changedby, $sessionid, $active)
+{
+    global $DB;
+    if ($active) {
+        $record = new stdClass();
+        $record->course_id = $courseid;
+        $record->active = $active;
+        $record->session_id = time();
+        $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+        $record->changedby = $changedby;
+
+        // var_dump($record);
+
+        $DB->insert_record('local_piu_window', $record);
+
+        return $record->session_id;
+    } else {
+        $record = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'session_id' => $sessionid));
+        var_dump($record);
+
+        $record->active = $active;
+        $record->changedby = $changedby;
+
+        var_dump($record);
+
+        $DB->update_record('local_piu_window', $record);
+    }
+    // if ($DB->record_exists_select('local_piu_window', 'course_id = :id and active = :active', array('id' => $courseid, 'active' => 1))) {
+    //     $record = $DB->get_record_select('local_piu_window', 'course_id = :id', array('id' => $courseid));
+    //     $record->active = $active;
+    //     $record->changedby = $changedby;
+
+    //     $DB->update_record('local_piu_window', $record);
+    // } else {
+    //     $record = new stdClass();
+    //     $record->course_id = $courseid;
+    //     $record->active = $active;
+    //     $record->session_id = time();
+    //     $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+    //     $record->changedby = $changedby;
+
+    //     $DB->insert_record('local_piu_window', $record);
+    // }
 }
