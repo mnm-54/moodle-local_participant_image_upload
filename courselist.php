@@ -38,7 +38,7 @@ global $DB, $PAGE, $USER;
 
 $sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_id FROM {course} c 
         left join {local_piu_window} lpw on c.id =lpw.course_id  and lpw.active=1
-        where visible=1;";
+        where visible=1  and c.id<>1;";
 
 $courses = $DB->get_records_sql($sql);
 
