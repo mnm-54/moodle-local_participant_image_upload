@@ -42,9 +42,7 @@ $sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_i
 
 $courses = $DB->get_records_sql($sql);
 
-array_shift($courses);
-
-// die(var_dump($courses));
+$courses = array_values($courses);
 
 $templatecontext = (object)[
     'course_list' => $courses,
@@ -55,7 +53,5 @@ $templatecontext = (object)[
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/courselist', $templatecontext);
-
-//$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
 
 echo $OUTPUT->footer();
