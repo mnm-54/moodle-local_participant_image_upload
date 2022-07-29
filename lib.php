@@ -179,6 +179,12 @@ function is_coursecreator() {
     return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
 }
 
+function is_teacher() {
+    global $DB, $USER;
+    $roleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher']);
+    return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
+}
+
 function insert_attendance($courseid, $session_id)
 {
     global $DB;

@@ -30,7 +30,7 @@ $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_courselist', 'local_participant_image_upload'));
 
 // !is_siteadmin()
-if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+if (!is_siteadmin() && !is_manager() && !is_coursecreator() && !is_teacher()) {
     redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
@@ -38,7 +38,7 @@ global $DB, $PAGE, $USER;
 
 $sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_id FROM {course} c 
         left join {local_piu_window} lpw on c.id =lpw.course_id  and lpw.active=1
-        where visible=1  and c.id<>1;";
+        where visible=1";
 
 $courses = $DB->get_records_sql($sql);
 

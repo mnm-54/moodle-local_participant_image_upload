@@ -31,7 +31,7 @@ $PAGE->set_title(get_string('title_manage', 'local_participant_image_upload'));
 
 require_login();
 
-if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
+if (!is_siteadmin() && !is_manager() && !is_coursecreator() && !is_teacher()) {
     redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
