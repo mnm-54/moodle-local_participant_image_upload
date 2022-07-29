@@ -29,7 +29,6 @@ $PAGE->set_url(new moodle_url('/local/participant_image_upload/courselist.php'))
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_courselist', 'local_participant_image_upload'));
 
-// !is_siteadmin()
 if (!is_siteadmin() && !is_manager() && !is_coursecreator()) {
     redirect($CFG->wwwroot, get_string('no_permission', 'local_participant_image_upload'), null, \core\output\notification::NOTIFY_ERROR);
 }
@@ -42,9 +41,7 @@ $sql = "SELECT  c.id AS id,c.fullname fullname, lpw.active active, lpw.session_i
 
 $courses = $DB->get_records_sql($sql);
 
-array_shift($courses);
-
-// die(var_dump($courses));
+$courses = array_values($courses);
 
 $templatecontext = (object)[
     'course_list' => $courses,
@@ -55,7 +52,5 @@ $templatecontext = (object)[
 echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/courselist', $templatecontext);
-
-//$PAGE->requires->js_call_amd('local_participant_image_upload/time_window_handler', 'init', array($USER->id));
 
 echo $OUTPUT->footer();
