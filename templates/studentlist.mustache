@@ -19,11 +19,22 @@
     }
 }}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js" integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <link rel="stylesheet" type="text/css" href="./thirdpartylibs/DataTables/datatables.css">
  
 <script type="text/javascript" charset="utf8" src="./thirdpartylibs/DataTables/datatables.js"></script>
+
+<script type="text/javascript" charset="utf8" src="./thirdpartylibs/chosenjs/chosen.jquery.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="./thirdpartylibs/chosenjs/chosen.min.css">
+ 
+
+
+<style>
+  .chosen-container-single {
+    width: 200px !important;
+  }
+</style>
 
 <h1>{{ course_name }}</h1>
 
@@ -35,7 +46,6 @@
   {{#str}} attendance_list, local_participant_image_upload {{/str}}
 </a>
 
-
 <table class="table table-hover" border="1" id="data_table">
   <thead>
     <tr>
@@ -43,6 +53,7 @@
       <th class="bg-primary">{{#str}} email, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} preview, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} action, local_participant_image_upload {{/str}}</th>
+      <th class="bg-primary">Session wise attendance</th>
     </tr>
   </thead>
   <tbody>
@@ -63,14 +74,36 @@
           {{#str}} upload_text, local_participant_image_upload {{/str}}
         </a>
       </td>
+      <td>
+        <select name="select" id="select-{{id}}" class="form-control" data-live-search="true">
+          <option value="">Select a session</option>
+          {{#sessions}} 
+              <option value="{{session_id}}">{{session_name}}</option>
+          {{/sessions}}
+        </select>
+        <button id="{{id}}" class="btn btn-primary give-attendance">Give Attendance</button>
+      </td>
     </tr>
     {{/studentlist}}
   </tbody>
   
 </table>
 
+{{#studentlist}} 
+<script>
+$(document).ready( function () {
+  $("#select-{{id}}").chosen()
+});
+</script>
+{{/studentlist}}
+
 <script>
 $(document).ready( function () {
     $('#data_table').DataTable();
 } );
+
+
+
 </script>
+
+

@@ -135,7 +135,7 @@ function student_attandancelist($courseid, $from, $to, $sort) {
         JOIN {course} on {context}.instanceid = {course}.id
         LEFT JOIN {local_piu_window} on {course}.id = {local_piu_window}.course_id
         LEFT JOIN {block_face_recog_attendance} on {course}.id = {block_face_recog_attendance}.course_id AND {user}.id = {block_face_recog_attendance}.student_id AND {local_piu_window}.session_id = {block_face_recog_attendance}.session_id
-        WHERE {role}.shortname = 'student' AND {course}.id=2 AND {local_piu_window}.session_id in 
+        WHERE {role}.shortname = 'student' AND {course}.id=$courseid AND {local_piu_window}.session_id in 
         (" . $string . ") 
         GROUP BY {user}.id, {local_piu_window}.session_id
         ORDER BY {local_piu_window}.session_id " . $sort;
@@ -165,6 +165,17 @@ function student_attendance_update($courseid, $studentid, $sessionid) {
         
         $DB->update_record('block_face_recog_attendance', $record);
     }
+}
+
+function attendance_status($courseid, $studentid, $sessionid) {
+    global $DB;
+
+    return $DB->record_exists('block_face_recog_attendance', array(
+                    'course_id' => $courseid,
+                    'student_id' => $studentid,
+                    'session_id' => $sessionid
+                ));
+
 }
 
 function is_manager() {
