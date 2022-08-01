@@ -38,9 +38,6 @@ global $DB, $PAGE, $USER;
 
 if(is_teacher()) {
     $courses = get_enrolled_courselist_as_teacher($USER->id);
-    // echo "<pre>";
-    // var_dump($courses); 
-    // die;
 }
 
 if(is_siteadmin() || is_manager()) {

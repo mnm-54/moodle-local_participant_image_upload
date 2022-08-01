@@ -16,8 +16,6 @@ if ($active) {
 
     $session_id =  toggle_window($course_id, $USER->id, $session_id, 1);
 
-    // insert_attendance($course_id, $session_id);
-
     redirect(new moodle_url('/local/participant_image_upload/courselist.php'), get_string('start_text', 'local_participant_image_upload'));
 } else {
     toggle_window($course_id, $USER->id, $session_id, 0);

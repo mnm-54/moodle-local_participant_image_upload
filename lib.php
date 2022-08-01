@@ -102,7 +102,9 @@ function check_student_attandance($cid, $sid, $time)
         return "<td style='color:red;'>Absent</td>";
     }
 }
-
+/**
+ * Returns the attendance list for a specfic course for a specific time range.
+ */
 function student_attandancelist($courseid, $from, $to, $sort) {
     global $DB;
 
@@ -143,7 +145,9 @@ function student_attandancelist($courseid, $from, $to, $sort) {
     $studentdata = $DB->get_recordset_sql($sql);
     return $studentdata;
 }
-
+/**
+ * Submits attendance. 
+ */
 function student_attendance_update($courseid, $studentid, $sessionid) {
     global $DB;
 
@@ -167,6 +171,10 @@ function student_attendance_update($courseid, $studentid, $sessionid) {
     }
 }
 
+
+/**
+ * Checks if the users is present or not in a specific session of a course.
+ */
 function attendance_status($courseid, $studentid, $sessionid) {
     global $DB;
 
@@ -175,27 +183,37 @@ function attendance_status($courseid, $studentid, $sessionid) {
                     'student_id' => $studentid,
                     'session_id' => $sessionid
                 ));
-
 }
-
+/**
+ * Checks if the current user is a manager.
+ */
 function is_manager() {
     global $DB, $USER;
     $roleid = $DB->get_field('role', 'id', ['shortname' => 'manager']);
     return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
 }
 
+/**
+ * Checks if the current user is a coursecreator.
+ */
 function is_coursecreator() {
     global $DB, $USER;
     $roleid = $DB->get_field('role', 'id', ['shortname' => 'coursecreator']);
     return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
 }
 
+/**
+ * Checks if the current user is an editing teacher in any of the courses.
+ */
 function is_teacher() {
     global $DB, $USER;
     $roleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher']);
     return $DB->record_exists('role_assignments', ['userid' => $USER->id, 'roleid' => $roleid]); 
 }
 
+/**
+ * Returns the courselist of a user where the user is enrolled as a teacher.
+ */
 function get_enrolled_courselist_as_teacher($userid) {
     global $DB;
     $sql = "SELECT lpw.id, c.fullname 'fullname', c.id, lpw.session_id, lpw.active active
@@ -210,27 +228,6 @@ function get_enrolled_courselist_as_teacher($userid) {
     return $courselist;
 }
 
-function insert_attendance($courseid, $session_id)
-{
-    global $DB;
-    $sql = "SELECT u.id student_id,c.id course_id
-        FROM {role_assignments} r
-        JOIN {user} u on r.userid = u.id
-        JOIN {role} rn on r.roleid = rn.id
-        JOIN {context} ctx on r.contextid = ctx.id
-        JOIN {course} c on ctx.instanceid = c.id
-        WHERE rn.shortname = 'student'
-        AND c.id=" . $courseid;
-
-    $studentdata = $DB->get_records_sql($sql);
-
-    foreach ($studentdata as $student) {
-        $student->session_id = $session_id;
-        $student->time = 0;
-    }
-
-    $DB->insert_records('block_face_recog_attendance', $studentdata);
-}
 
 /**
  * Create a new active session or stops a active session.
