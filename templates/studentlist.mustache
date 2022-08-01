@@ -43,7 +43,6 @@
       <th class="bg-primary">{{#str}} email, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} preview, local_participant_image_upload {{/str}}</th>
       <th class="bg-primary">{{#str}} action, local_participant_image_upload {{/str}}</th>
-      <th class="bg-primary">{{#str}} status, local_participant_image_upload {{/str}}</th>
     </tr>
   </thead>
   <tbody>
@@ -63,22 +62,6 @@
         <a class="btn btn-primary" href="{{redirecturl}}?cid={{ courseid }}&id={{ id }}" >
           {{#str}} upload_text, local_participant_image_upload {{/str}}
         </a>
-      </td>
-      <td>
-        
-        {{#session}}
-          {{#present}}
-            {{#str}} attendance_given, local_participant_image_upload {{/str}}
-          {{/present}}
-          {{^present}}
-            <a href="{{ actionurl }}?id={{id}}&cid={{ courseid }}&session_id={{ session_id }}" class="btn btn-primary">
-              {{#str}} give_attendance, local_participant_image_upload {{/str}}
-            </a>
-          {{/present}}
-        {{/session}}
-        {{^session}}
-          {{#str}} no_active_session, local_participant_image_upload {{/str}}
-        {{/session}}
       </td>
     </tr>
     {{/studentlist}}
