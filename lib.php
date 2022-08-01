@@ -218,52 +218,56 @@ function insert_attendance($courseid, $session_id)
         $student->time = 0;
     }
 
-    // die(var_dump($studentdata));
-
     $DB->insert_records('block_face_recog_attendance', $studentdata);
 }
 
-function toggle_window($courseid, $changedby, $sessionid, $active)
-{
+/**
+ * Create a new active session or stops a active session.
+ */
+function toggle_window($courseid, $changedby, $sessionid, $active) {
     global $DB;
     if ($active) {
         $record = new stdClass();
         $record->course_id = $courseid;
         $record->active = $active;
         $record->session_id = time();
-        $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
+        $record->session_name = get_session_name($courseid);
         $record->changedby = $changedby;
-
-        // var_dump($record);
 
         $DB->insert_record('local_piu_window', $record);
 
         return $record->session_id;
     } else {
         $record = $DB->get_record('local_piu_window', array('course_id' => $courseid, 'session_id' => $sessionid));
-        var_dump($record);
 
         $record->active = $active;
         $record->changedby = $changedby;
 
-        var_dump($record);
-
         $DB->update_record('local_piu_window', $record);
     }
-    // if ($DB->record_exists_select('local_piu_window', 'course_id = :id and active = :active', array('id' => $courseid, 'active' => 1))) {
-    //     $record = $DB->get_record_select('local_piu_window', 'course_id = :id', array('id' => $courseid));
-    //     $record->active = $active;
-    //     $record->changedby = $changedby;
+}
 
-    //     $DB->update_record('local_piu_window', $record);
-    // } else {
-    //     $record = new stdClass();
-    //     $record->course_id = $courseid;
-    //     $record->active = $active;
-    //     $record->session_id = time();
-    //     $record->session_name = "C-" . $courseid . "-" . rand(1, 100);
-    //     $record->changedby = $changedby;
+/**
+ * Prepares and returns a session name for a course according to the convention.
+ * 
+ * Session name: C{courseid}-y/m/d-{nth_session_of_today} (eg. C100-2022/08/01-01, C100-2022/08/01-02)
+ */
+function get_session_name($courseid) {
+    global $DB;
+    // Get the total number of sessions of the specific course for today.
 
-    //     $DB->insert_record('local_piu_window', $record);
-    // }
+    // Setting default timezone.
+    date_default_timezone_set('Asia/kolkata');
+    $t1 = mktime(0, 0, 0);
+    $t2 = mktime(23, 59, 59);
+
+    $sql = "SELECT * FROM {local_piu_window} 
+            WHERE {local_piu_window}.session_id > $t1 AND {local_piu_window}.session_id < $t2";
+
+    $records = $DB->get_records_sql($sql);
+    $count = count($records) + 1;
+    
+    // Prepare session name.
+    $session_name = "C" . $courseid . "-" . date('Y/m/d', strtotime('now')) . "-" . $count;
+    return $session_name;
 }
