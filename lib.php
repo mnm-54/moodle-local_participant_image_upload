@@ -187,12 +187,13 @@ function is_teacher() {
 
 function get_enrolled_courselist_as_teacher($userid) {
     global $DB;
-    $sql = "SELECT c.fullname 'fullname', c.id
+    $sql = "SELECT lpw.id, c.fullname 'fullname', c.id, lpw.session_id, lpw.active active
                 FROM {role_assignments} r
                 JOIN {user} u on r.userid = u.id
                 JOIN {role} rn on r.roleid = rn.id
                 JOIN {context} ctx on r.contextid = ctx.id
                 JOIN {course} c on ctx.instanceid = c.id
+                LEFT JOIN {local_piu_window} lpw on c.id = lpw.course_id  and lpw.active=1
                 WHERE rn.shortname = 'editingteacher' and u.id=" . $userid;
     $courselist = $DB->get_records_sql($sql);
     return $courselist;
