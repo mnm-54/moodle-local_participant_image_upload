@@ -78,6 +78,9 @@ echo $OUTPUT->header();
 foreach ($studentdata as $student) {
     $student->image_url = local_participant_image_upload_get_image_url($student->id);
 }
+
+$sessions = $DB->get_records('local_piu_window', array('course_id' => $courseid), 'session_id DESC');
+
 $templatecontext = (object)[
     'course_name' => $coursename->fullname,
     'courseid' => $courseid,
@@ -86,7 +89,14 @@ $templatecontext = (object)[
     'studentlist' => array_values($studentdata),
     'redirecturl' => new moodle_url('/local/participant_image_upload/upload_image.php'),
     'actionurl' => $CFG->wwwroot . '/local/participant_image_upload/submitattendance.php',
+    'load_data_url' => $CFG->wwwroot . '/local/participant_image_upload/load_data.php',
+    'sessions' => array_values($sessions),
+    'number_of_students' => count($studentdata),
 ];
+
+$PAGE->requires->js_call_amd('local_participant_image_upload/dropdown_handler', 'init', array(
+    $CFG->wwwroot . "/local/participant_image_upload/submitattendance.php" . "?cid=" . $courseid
+));
 
 echo $OUTPUT->render_from_template('local_participant_image_upload/studentlist', $templatecontext);
 

@@ -57,3 +57,6 @@ $string['no_active_session'] = 'No active session';
 $string['course_list'] = 'All courses';
 $string['student_list'] = 'Student list';
 $string['no_course_selected'] = 'No course was selected';
+$string['attendance_error'] = 'Attendance error. Try selecting correct session name';
+$string['attendance_already_given'] = 'Attendance already given.';
+$string['session_wise_attendance'] = 'Session wise attendance';
