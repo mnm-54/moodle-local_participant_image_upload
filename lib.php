@@ -128,6 +128,11 @@ function student_attandancelist($courseid, $from, $to, $sort) {
     }
 
     $string = implode(", ", $distintsessions);
+    
+    if(empty($string)) {
+        $studentdata = array();
+        return $studentdata;
+    }
  
     $sql = "SELECT {user}.id, {user}.username, {local_piu_window}.session_id, {local_piu_window}.session_name, {course}.id course_id, {block_face_recog_attendance}.time, {user}.firstname, {user}.lastname, {user}.email
         FROM {role_assignments}
